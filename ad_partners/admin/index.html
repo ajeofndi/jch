@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITEMMANIA PARTNERS | 관리자</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Pretendard', sans-serif; }
+        body { background: #F4F5F7; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar-item { transition: all 0.18s; }
+        .sidebar-item.active { background: #FEF2F2; color: #DC2626; font-weight: 700; }
+        .sidebar-item.active svg { color: #DC2626; }
+        .sidebar-item:not(.active):hover { background: #F9FAFB; }
+        .card { background: #fff; border-radius: 20px; border: 1px solid #E9ECF0; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+        .status-badge { font-size: 10px; padding: 3px 10px; border-radius: 99px; font-weight: 700; }
+        .s-pending  { background:#FEF3C7; color:#92400E; }
+        .s-approved { background:#DCFCE7; color:#166534; }
+        .s-rejected { background:#FEE2E2; color:#991B1B; }
+        .s-waiting  { background:#F1F5F9; color:#475569; }
+        .btn-primary { background: #DC2626; color: #fff; border-radius: 14px; font-weight: 700; font-size: 13px; padding: 10px 20px; transition: all .18s; }
+        .btn-primary:hover { background: #B91C1C; transform: translateY(-1px); }
+        .btn-ghost { background: #F3F4F6; color: #374151; border-radius: 14px; font-weight: 700; font-size: 13px; padding: 10px 20px; transition: all .18s; }
+        .btn-ghost:hover { background: #E5E7EB; }
+        .btn-sm { font-size: 11px; padding: 6px 14px; border-radius: 10px; font-weight: 700; transition: all .15s; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .modal-bg { backdrop-filter: blur(6px); background: rgba(0,0,0,.55); }
+        .toast-anim { transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+        input, select, textarea { outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #DC2626 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.08); }
+        .tbl-row:hover { background: #FAFAFA; }
+        .approve-btn { background:#DCFCE7; color:#166534; }
+        .approve-btn:hover { background:#BBF7D0; }
+        .reject-btn  { background:#FEE2E2; color:#991B1B; }
+        .reject-btn:hover  { background:#FECACA; }
+    </style>
+</head>
+<body>
+<div class="flex h-screen overflow-hidden">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="w-60 bg-white border-r border-gray-100 flex-col hidden lg:flex z-20 flex-shrink-0">
+        <div class="px-6 py-6 border-b border-gray-50">
+            <div class="flex items-center gap-2.5 mb-1">
+                <div class="bg-red-600 p-1.5 rounded-xl text-white shadow-sm shadow-red-200">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                </div>
+                <span class="text-lg font-black tracking-tight text-gray-900">ITEMMANIA</span>
+            </div>
+            <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest ml-9">Admin</p>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto no-scrollbar">
+            <button onclick="switchTab('overview')" class="sidebar-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 flex-shrink-0"></i><span>운영 현황</span>
+            </button>
+            <button onclick="switchTab('notice')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="bell" class="w-4 h-4 flex-shrink-0"></i><span>공지 관리</span>
+            </button>
+            <button onclick="switchTab('campaigns')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i><span>캠페인 관리</span>
+            </button>
+            <button onclick="switchTab('camp-approve')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="clipboard-list" class="w-4 h-4 flex-shrink-0"></i>
+                <span>캠페인 참여 내역</span>
+            </button>
+            <button onclick="switchTab('point-log')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="activity" class="w-4 h-4 flex-shrink-0"></i>
+                <span>포인트 적립 내역</span>
+            </button>
+            <button onclick="switchTab('media-approve')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="monitor-check" class="w-4 h-4 flex-shrink-0"></i>
+                <span>매체 승인 내역</span>
+                <span id="badge-media" class="ml-auto text-[10px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full">3</span>
+            </button>
+            <button onclick="switchTab('point-approve')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="coins" class="w-4 h-4 flex-shrink-0"></i>
+                <span>포인트 지급 신청 내역</span>
+                <span id="badge-point" class="ml-auto text-[10px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full">3</span>
+            </button>
+            <button onclick="switchTab('payout-approve')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="wallet" class="w-4 h-4 flex-shrink-0"></i>
+                <span>환전 신청 내역</span>
+                <span id="badge-payout" class="ml-auto text-[10px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full">2</span>
+            </button>
+        </nav>
+        <div class="p-3 border-t border-gray-50">
+            <div class="bg-red-50 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center text-white font-black text-sm">A</div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-gray-800 truncate">admin</p>
+                        <p class="text-[10px] text-red-500 font-bold">관리자</p>
+                    </div>
+                    <button class="ml-auto text-gray-300 hover:text-gray-500">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-14 bg-white border-b border-gray-100 px-8 flex items-center justify-between flex-shrink-0 z-30">
+            <h2 id="header-title" class="text-sm font-bold text-gray-800">운영 현황</h2>
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 bg-red-50 px-3 py-1.5 rounded-lg">
+                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-red-700">관리자 모드</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto">
+        <div id="main-content" class="p-8 max-w-[1300px] mx-auto w-full space-y-0">
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 운영 현황
+        ══════════════════════════════════════ -->
+        <div id="tab-overview" class="tab-content active space-y-6">
+            <div>
+                <h3 class="text-xl font-black text-gray-900">운영 현황</h3>
+                <p class="text-sm text-gray-400 mt-1">파트너스 전체 현황을 한눈에 확인합니다.</p>
+            </div>
+
+            <!-- 핵심 수치 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 bg-blue-50 rounded-2xl flex items-center justify-center"><i data-lucide="users" class="w-4 h-4 text-blue-500"></i></div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">승인 매체</p>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900"><span id="stat-media-approved">-</span><span class="text-sm font-bold text-gray-400 ml-1">개</span></p>
+                    <p class="text-[10px] text-gray-400 font-bold mt-1" id="stat-media-sub">-</p>
+                </div>
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 bg-orange-50 rounded-2xl flex items-center justify-center"><i data-lucide="megaphone" class="w-4 h-4 text-orange-500"></i></div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">진행 캠페인</p>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900"><span id="stat-camp-active">-</span><span class="text-sm font-bold text-gray-400 ml-1">개</span></p>
+                    <p class="text-[10px] text-gray-400 font-bold mt-1" id="stat-camp-sub">-</p>
+                </div>
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 bg-red-50 rounded-2xl flex items-center justify-center"><i data-lucide="clock" class="w-4 h-4 text-red-500"></i></div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">대기 심사</p>
+                    </div>
+                    <p class="text-2xl font-black text-red-600"><span id="stat-pending-total">-</span><span class="text-sm font-bold text-red-300 ml-1">건</span></p>
+                    <p class="text-[10px] text-gray-400 font-bold mt-1" id="stat-pending-sub">-</p>
+                </div>
+                <div class="card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 bg-green-50 rounded-2xl flex items-center justify-center"><i data-lucide="coins" class="w-4 h-4 text-green-500"></i></div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">이번 달 지급 포인트</p>
+                    </div>
+                    <p class="text-2xl font-black text-gray-900"><span id="stat-point-total">-</span><span class="text-sm font-bold text-gray-400 ml-1">P</span></p>
+                    <p class="text-[10px] text-green-600 font-bold mt-1" id="stat-point-sub">-</p>
+                </div>
+            </div>
+
+            <!-- 심사 대기 요약 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div class="card p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-sm text-gray-800">매체 심사 대기</h4>
+                        <button onclick="switchTab('media-approve')" class="text-xs font-bold text-red-500 hover:text-red-700">전체 보기 →</button>
+                    </div>
+                    <div class="space-y-2" id="overview-media-list"></div>
+                </div>
+                <div class="card p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-sm text-gray-800">최근 캠페인 참여 내역</h4>
+                        <button onclick="switchTab('camp-approve')" class="text-xs font-bold text-red-500 hover:text-red-700">전체 보기 →</button>
+                    </div>
+                    <div class="space-y-2" id="overview-camp-list"></div>
+                </div>
+                <div class="card p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-sm text-gray-800">환전 심사 대기</h4>
+                        <button onclick="switchTab('payout-approve')" class="text-xs font-bold text-red-500 hover:text-red-700">전체 보기 →</button>
+                    </div>
+                    <div class="space-y-2" id="overview-payout-list"></div>
+                </div>
+            </div>
+
+            <!-- 캠페인 포인트 현황 -->
+            <div class="card p-6">
+                <h4 class="font-bold text-sm text-gray-800 mb-4">캠페인별 포인트 소진 현황</h4>
+                <div class="space-y-3" id="overview-camp-points"></div>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 공지 관리
+        ══════════════════════════════════════ -->
+        <div id="tab-notice" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">공지 관리</h3>
+                    <p class="text-sm text-gray-400 mt-1">이용자 대시보드에 노출될 공지 및 가이드를 관리합니다.</p>
+                </div>
+                <button onclick="openNoticeModal()" class="btn-primary flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> 공지 등록
+                </button>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase w-16">구분</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">제목</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">설명</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-20">노출</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-28">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notice-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 캠페인 관리
+        ══════════════════════════════════════ -->
+        <div id="tab-campaigns" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">캠페인 관리</h3>
+                    <p class="text-sm text-gray-400 mt-1">캠페인의 예산·일 한도·커미션 정보를 설정합니다.</p>
+                </div>
+                <button onclick="openCampModal()" class="btn-primary flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> 캠페인 등록
+                </button>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인명</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">기간</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">총 예산 (P)</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">일 한도 (P)</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">잔여 (P)</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">커미션</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">참여 가능</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-28">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="camp-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 매체 심사
+        ══════════════════════════════════════ -->
+        <div id="tab-media-approve" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">매체 승인 내역</h3>
+                    <p class="text-sm text-gray-400 mt-1">파트너가 등록한 매체를 검토하고 승인 또는 거부합니다. 처리 기간: 1~3 영업일</p>
+                </div>
+                <button onclick="downloadCSV('media')" class="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> CSV 다운로드
+                </button>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <input id="media-search-member" type="text" placeholder="회원번호 검색" oninput="filterMedia()" class="text-xs border border-gray-200 rounded-xl px-4 py-2.5 w-40 bg-gray-50">
+                <div class="flex items-center gap-1.5">
+                    <input id="media-date-from" type="date" oninput="filterMedia()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    <span class="text-xs text-gray-400 font-bold">~</span>
+                    <input id="media-date-to" type="date" oninput="filterMedia()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                </div>
+                <button onclick="resetFilter('media')" class="text-xs text-gray-400 hover:text-gray-600 font-bold px-2">초기화</button>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">회원번호</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">매체명</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">유형</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">URL</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">신청일</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-36">처리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="media-approve-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 캠페인 참여 내역
+        ══════════════════════════════════════ -->
+        <div id="tab-camp-approve" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">캠페인 참여 내역</h3>
+                    <p class="text-sm text-gray-400 mt-1">매체 승인이 완료된 파트너만 캠페인에 참여할 수 있습니다. 신청 즉시 트래킹 ID가 자동 발급됩니다.</p>
+                </div>
+                <button onclick="downloadCSV('camp')" class="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> CSV 다운로드
+                </button>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <input id="camp-search-member" type="text" placeholder="회원번호 검색" oninput="filterCamp()" class="text-xs border border-gray-200 rounded-xl px-4 py-2.5 w-40 bg-gray-50">
+                <div class="flex items-center gap-1.5">
+                    <input id="camp-date-from" type="date" oninput="filterCamp()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    <span class="text-xs text-gray-400 font-bold">~</span>
+                    <input id="camp-date-to" type="date" oninput="filterCamp()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                </div>
+                <button onclick="resetFilter('camp')" class="text-xs text-gray-400 hover:text-gray-600 font-bold px-2">초기화</button>
+            </div>
+            <!-- 안내 배너 -->
+            <div class="card p-4 border-l-4 border-l-blue-400 flex gap-3 items-start">
+                <i data-lucide="info" class="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5"></i>
+                <div class="text-xs text-gray-600 leading-relaxed">
+                    <span class="font-bold text-gray-800">참여 정책 안내</span> — 매체 승인(APPROVED) 상태인 파트너만 캠페인 참여 신청이 가능합니다. 승인되지 않은 매체로는 참여할 수 없으며, 참여 신청 즉시 트래킹 ID(TRK_매체타입_캠페인코드_순번)가 자동 발급됩니다.
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">회원번호</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">매체</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">매체 승인</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">트래킹 ID</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">참여일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="camp-approve-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 포인트 적립 내역
+        ══════════════════════════════════════ -->
+        <div id="tab-point-log" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">포인트 적립 내역</h3>
+                    <p class="text-sm text-gray-400 mt-1">포인트 지급 신청이 승인되면 자동으로 로그가 적재됩니다. 승인된 건만 이 목록에 표시됩니다.</p>
+                </div>
+                <button onclick="downloadCSV('point-log')" class="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> CSV 다운로드
+                </button>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <input id="pointlog-search-member" type="text" placeholder="회원번호 검색" oninput="filterPointLog()" class="text-xs border border-gray-200 rounded-xl px-4 py-2.5 w-40 bg-gray-50">
+                <div class="flex items-center gap-1.5">
+                    <input id="pointlog-date-from" type="date" oninput="filterPointLog()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    <span class="text-xs text-gray-400 font-bold">~</span>
+                    <input id="pointlog-date-to" type="date" oninput="filterPointLog()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                </div>
+                <button onclick="resetFilter('point-log')" class="text-xs text-gray-400 hover:text-gray-600 font-bold px-2">초기화</button>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">회원번호</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">트래킹 ID</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">성과 유형</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">클릭</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">가입</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">로그인</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">거래번호</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">거래금액</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">지급 포인트</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">발생일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="point-log-body"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="tab-payout-approve" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">환전 신청 내역</h3>
+                    <p class="text-sm text-gray-400 mt-1">파트너가 보유한 전체 적립 포인트를 아이템매니아 마일리지로 환전 신청합니다.</p>
+                </div>
+                <button onclick="downloadCSV('payout')" class="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> CSV 다운로드
+                </button>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <input id="payout-search-member" type="text" placeholder="회원번호 검색" oninput="filterPayout()" class="text-xs border border-gray-200 rounded-xl px-4 py-2.5 w-40 bg-gray-50">
+                <div class="flex items-center gap-1.5">
+                    <input id="payout-date-from" type="date" oninput="filterPayout()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    <span class="text-xs text-gray-400 font-bold">~</span>
+                    <input id="payout-date-to" type="date" oninput="filterPayout()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                </div>
+                <button onclick="resetFilter('payout')" class="text-xs text-gray-400 hover:text-gray-600 font-bold px-2">초기화</button>
+            </div>
+            <!-- 안내 배너 -->
+            <div class="card p-4 border-l-4 border-l-amber-400 flex gap-3 items-start">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5"></i>
+                <div class="text-xs text-gray-600 leading-relaxed">
+                    <span class="font-bold text-gray-800">환전 정책 안내</span> — 캠페인별로 누적 적립된 전체 보유 포인트를 아이템매니아 마일리지(현금성)로 교환합니다. 매월 1회 신청 가능 / 최소 10,000 P · 50,000 P 초과 시 신분증 사본 필요 / 거부 시 보유 포인트로 재적립 / 포인트↔마일리지 1:1 전환 (마일리지 유효기간 30일)
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">회원번호</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">보유 포인트</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">신청 포인트</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">신분증</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">신청일</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-36">처리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payout-approve-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 포인트 지급 심사
+        ══════════════════════════════════════ -->
+        <div id="tab-point-approve" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">포인트 지급 신청 내역</h3>
+                    <p class="text-sm text-gray-400 mt-1">캠페인별 성과에 따른 포인트 지급을 검토하고 승인합니다. 승인 즉시 파트너 계정에 적립됩니다.</p>
+                </div>
+                <button onclick="downloadCSV('point')" class="flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> CSV 다운로드
+                </button>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <input id="point-search-member" type="text" placeholder="회원번호 검색" oninput="filterPoint()" class="text-xs border border-gray-200 rounded-xl px-4 py-2.5 w-40 bg-gray-50">
+                <div class="flex items-center gap-1.5">
+                    <input id="point-date-from" type="date" oninput="filterPoint()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    <span class="text-xs text-gray-400 font-bold">~</span>
+                    <input id="point-date-to" type="date" oninput="filterPoint()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                </div>
+                <button onclick="resetFilter('point')" class="text-xs text-gray-400 hover:text-gray-600 font-bold px-2">초기화</button>
+            </div>
+            <!-- 안내 배너 -->
+            <div class="card p-4 border-l-4 border-l-blue-400 flex gap-3 items-start">
+                <i data-lucide="info" class="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5"></i>
+                <div class="text-xs text-gray-600 leading-relaxed">
+                    <span class="font-bold text-gray-800">지급 정책 안내</span> — 캠페인 성과(클릭·가입·로그인·구매·판매) 기준으로 산정된 포인트를 검토합니다. 승인 시 파트너 계정에 즉시 적립되며 포인트 적립 내역에 자동 기록됩니다. 거부 시 해당 건은 무효 처리됩니다.
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">회원번호</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">트래킹 ID</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">성과 유형</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">지급 포인트</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">발생일</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-36">처리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="point-approve-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════
+             TAB: 회원 관리
+        ══════════════════════════════════════ -->
+        <div id="tab-members" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-black text-gray-900">회원 관리</h3>
+                    <p class="text-sm text-gray-400 mt-1">파트너 회원 현황 및 어뷰징 여부를 관리합니다.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" placeholder="회원 ID 검색..." class="text-xs border border-gray-200 rounded-xl px-4 py-2.5 w-48 bg-gray-50">
+                    <select class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                        <option>전체 상태</option>
+                        <option>정상</option>
+                        <option>어뷰징 의심</option>
+                        <option>이용 정지</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-12">순서</th>
+                            <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">회원 ID</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">승인 매체</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">참여 캠페인</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">총 적립 (P)</th>
+                            <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">환전 신청 (P)</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">가입일</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                            <th class="px-5 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase w-28">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="members-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        </div><!-- /main-content -->
+        </div><!-- /overflow-y-auto -->
+    </main>
+</div>
+
+<!-- ══════════ TOAST ══════════ -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs font-bold px-5 py-3 rounded-2xl shadow-xl toast-anim z-[999]" style="opacity:0;transform:translateX(-50%) translateY(8px);">
+    <span id="toast-msg"></span>
+</div>
+
+<!-- ══════════ MODAL: 공지 등록/수정 ══════════ -->
+<div id="notice-modal" class="fixed inset-0 modal-bg z-50 items-center justify-center hidden">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 p-7">
+        <div class="flex items-center justify-between mb-6">
+            <h3 id="notice-modal-title" class="font-black text-base text-gray-900">공지 등록</h3>
+            <button onclick="closeModal('notice-modal')" class="text-gray-300 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-gray-600 mb-1.5 block">구분 (이모지)</label>
+                <select id="notice-emoji" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                    <option value="📢">📢 공지</option>
+                    <option value="💡">💡 가이드</option>
+                    <option value="🆕">🆕 신규</option>
+                    <option value="⚠️">⚠️ 경고</option>
+                    <option value="🎁">🎁 이벤트</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-bold text-gray-600 mb-1.5 block">제목</label>
+                <input id="notice-title" type="text" placeholder="공지 제목을 입력하세요" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-gray-600 mb-1.5 block">설명</label>
+                <input id="notice-desc" type="text" placeholder="한 줄 설명을 입력하세요" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+                <label class="text-xs font-bold text-gray-600">즉시 노출</label>
+                <input id="notice-visible" type="checkbox" checked class="w-4 h-4 accent-red-500">
+            </div>
+        </div>
+        <div class="flex gap-3 mt-7">
+            <button onclick="closeModal('notice-modal')" class="btn-ghost flex-1">취소</button>
+            <button id="notice-submit-btn" onclick="submitNotice()" class="btn-primary flex-1">등록</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ MODAL: 캠페인 등록/수정 ══════════ -->
+<div id="camp-modal" class="fixed inset-0 modal-bg z-50 items-center justify-center hidden">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg mx-4 p-7 overflow-y-auto max-h-[90vh]">
+        <div class="flex items-center justify-between mb-6">
+            <h3 id="camp-modal-title" class="font-black text-base text-gray-900">캠페인 등록</h3>
+            <button onclick="closeModal('camp-modal')" class="text-gray-300 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2">
+                    <label class="text-xs font-bold text-gray-600 mb-1.5 block">캠페인명</label>
+                    <input id="camp-name" type="text" placeholder="캠페인 이름" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600 mb-1.5 block">상태</label>
+                    <select id="camp-status" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                        <option value="READY">대기</option>
+                        <option value="APPROVED">진행중</option>
+                        <option value="CLOSED">종료</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600 mb-1.5 block">총 예산 (P)</label>
+                    <input id="camp-total" type="number" placeholder="예: 5000000" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600 mb-1.5 block">일 한도 (P)</label>
+                    <input id="camp-daily" type="number" placeholder="예: 200000" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                </div>
+                <div class="col-span-2">
+                    <label class="text-xs font-bold text-gray-600 mb-1.5 block">캠페인 기간</label>
+                    <div class="flex items-center gap-2">
+                        <input id="camp-start" type="date" class="flex-1 text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                        <span class="text-sm text-gray-400 font-bold flex-shrink-0">~</span>
+                        <input id="camp-end" type="date" class="flex-1 text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="text-xs font-bold text-gray-600 mb-1.5 block">성과별 커미션</label>
+                <div id="commission-rows" class="space-y-2"></div>
+                <button onclick="addCommissionRow()" class="mt-2 text-xs font-bold text-red-500 hover:text-red-700 flex items-center gap-1">
+                    <i data-lucide="plus" class="w-3 h-3"></i> 커미션 항목 추가
+                </button>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-7">
+            <button onclick="closeModal('camp-modal')" class="btn-ghost flex-1">취소</button>
+            <button onclick="submitCamp()" class="btn-primary flex-1">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ MODAL: 거부 사유 ══════════ -->
+<div id="reject-modal" class="fixed inset-0 modal-bg z-50 items-center justify-center hidden">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 p-7">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-black text-base text-gray-900">거부 사유 입력</h3>
+            <button onclick="closeModal('reject-modal')" class="text-gray-300 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <textarea id="reject-reason" rows="3" placeholder="거부 사유를 입력하세요 (관리자 메시지로 발송됩니다)" class="w-full text-sm border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 resize-none"></textarea>
+        <div class="flex gap-3 mt-5">
+            <button onclick="closeModal('reject-modal')" class="btn-ghost flex-1">취소</button>
+            <button onclick="confirmReject()" class="flex-1 bg-red-600 text-white font-bold text-sm py-2.5 rounded-xl hover:bg-red-700 transition-colors">거부 처리</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ MODAL: 캠페인 삭제 확인 ══════════ -->
+<div id="camp-delete-modal" class="fixed inset-0 modal-bg z-50 items-center justify-center hidden">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 p-7">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-black text-base text-gray-900">캠페인 삭제</h3>
+            <button onclick="closeModal('camp-delete-modal')" class="text-gray-300 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="bg-red-50 rounded-2xl p-4 mb-5">
+            <p class="text-sm font-bold text-gray-800 mb-1" id="camp-delete-name"></p>
+            <p class="text-xs text-red-600">삭제 후 복구가 불가능합니다. 정말 삭제하시겠습니까?</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeModal('camp-delete-modal')" class="btn-ghost flex-1">NO</button>
+            <button onclick="confirmDeleteCamp()" class="flex-1 bg-red-600 text-white font-bold text-sm py-2.5 rounded-xl hover:bg-red-700 transition-colors">YES</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══ DATA ═══
+let NOTICES = [
+    { id:1, emoji:'📢', title:'6월 정산 일정 안내', desc:'공휴일로 인해 지급일이 변경됩니다.', visible:true },
+    { id:2, emoji:'💡', title:'블로그 유입 2배 늘리기', desc:'검색 키워드 최적화 방법 안내', visible:true },
+    { id:3, emoji:'🆕', title:'리니지M 시즌4 캠페인 오픈', desc:'커미션 최대 3% 특별 혜택 제공', visible:true },
+];
+
+let CAMPAIGNS = [
+    { id:1, name:'리니지M 신규서버 구매 프로모션',      brand:'리니지M · NCSOFT',         status:'READY',    category:'MMORPG',   totalPoints:10000000, dailyPoints:500000,  remainPoints:3820000, startDate:'2026.04.01', endDate:'2026.06.30', commissionDetail:[{type:'구매', val:'2.5% / 건'}] },
+    { id:2, name:'메이플스토리 신규서버 판매 프로모션',       brand:'메이플스토리M · Nexon',      status:'APPROVED', category:'MMORPG',   totalPoints:5000000,  dailyPoints:200000,  remainPoints:142000,  startDate:'2026.03.01', endDate:'2026.05.31', commissionDetail:[{type:'판매', val:'1.0% / 건'}] },
+    { id:3, name:'신규가입 프로모션',            brand:'Diablo IV · Blizzard',      status:'APPROVED', category:'액션RPG',  totalPoints:2000000,  dailyPoints:100000,  remainPoints:0,       startDate:'2026.02.01', endDate:'2026.03.31', commissionDetail:[{type:'가입', val:'300 P / 건'}] },
+    { id:4, name:'리니지클래식 구매 프로모션',          brand:'오딘 · Kakao Games',        status:'APPROVED', category:'MMORPG',   totalPoints:7000000,  dailyPoints:300000,  remainPoints:2150000, startDate:'2026.03.01', endDate:'2026.06.30', commissionDetail:[{type:'구매', val:'2.0% / 건'}] },
+    { id:5, name:'로스트아크 판매 프로모션',     brand:'로스트아크 · Smilegate',     status:'READY',    category:'액션RPG',  totalPoints:3000000,  dailyPoints:150000,  remainPoints:980000,  startDate:'2026.05.01', endDate:'2026.07.31', commissionDetail:[{type:'판매', val:'1.5% / 건'}] },
+    { id:6, name:'홈페이지 홍보 프로모션',               status:'CLOSED',                   category:'MMORPG', totalPoints:500000,   dailyPoints:50000,   remainPoints:500000,  startDate:'2026.01.01', endDate:'2026.02.28', commissionDetail:[{type:'클릭', val:'2 P / 건'}] },
+];
+
+let MEDIA_REQUESTS = [
+    { id:1, user:'plan010',  memberNo:'110140', name:'게임 매니아의 성지',   type:'네이버 블로그',  url:'blog.naver.com/mania_king',  date:'2026.03.28', status:'PENDING' },
+    { id:2, user:'gamer_j',  memberNo:'237851', name:'J의 게임 리뷰',       type:'유튜브',        url:'youtube.com/c/jgamer',       date:'2026.03.29', status:'PENDING' },
+    { id:3, user:'sale_king',memberNo:'384920', name:'아이템 정보 블로그',   type:'네이버 블로그',  url:'blog.naver.com/saleking',    date:'2026.03.30', status:'PENDING' },
+    { id:4, user:'nova99',   memberNo:'491073', name:'노바 TV',             type:'유튜브',        url:'youtube.com/@nova99',        date:'2026.03.25', status:'APPROVED' },
+    { id:5, user:'mmo_pro',  memberNo:'562348', name:'MMO 공략 사이트',     type:'개인 웹사이트',  url:'mmopro.kr',                  date:'2026.03.20', status:'REJECTED' },
+    { id:6, user:'item_k',   memberNo:'847291', name:'아이템 킹 블로그',     type:'네이버 블로그',  url:'blog.naver.com/item_king',   date:'2026.03.10', status:'APPROVED' },
+    { id:7, user:'rpg_fan',  memberNo:'764302', name:'RPG 팬 카페',         type:'네이버 카페',   url:'cafe.naver.com/rpgfan',      date:'2026.03.12', status:'APPROVED' },
+    { id:8, user:'seller99', memberNo:'523047', name:'게임 아이템 리뷰',    type:'네이버 블로그',  url:'blog.naver.com/seller99',    date:'2026.03.15', status:'APPROVED' },
+    { id:9, user:'log_user', memberNo:'492081', name:'게임로그 블로그',      type:'개인 웹사이트',  url:'gamelog.kr',                 date:'2026.03.08', status:'APPROVED' },
+];
+
+let CAMP_REQUESTS = [
+    { id:1, memberNo:'491073', campaign:'리니지클래식 구매 프로모션',   campCode:'camp4', media:'노바 TV',          mediaType:'youtube', mediaStatus:'APPROVED', date:'2026.03.27', status:'ACTIVE',   trackingId:'TRK_youtube_camp4_00001' },
+    { id:2, memberNo:'491073', campaign:'메이플스토리 신규서버 판매 프로모션', campCode:'camp2', media:'노바 TV',          mediaType:'youtube', mediaStatus:'APPROVED', date:'2026.03.30', status:'ACTIVE',   trackingId:'TRK_youtube_camp2_00001' },
+    { id:3, memberNo:'491073', campaign:'메이플스토리 신규서버 판매 프로모션', campCode:'camp2', media:'노바 TV',          mediaType:'youtube', mediaStatus:'APPROVED', date:'2026.03.05', status:'INACTIVE', trackingId:'TRK_youtube_camp2_00002' },
+    { id:4, memberNo:'847291', campaign:'리니지클래식 구매 프로모션',   campCode:'camp4', media:'아이템 킹 블로그', mediaType:'blog',    mediaStatus:'APPROVED', date:'2026.03.15', status:'ACTIVE',   trackingId:'TRK_blog_camp4_00001' },
+    { id:5, memberNo:'847291', campaign:'리니지클래식 구매 프로모션',   campCode:'camp4', media:'아이템 킹 블로그', mediaType:'blog',    mediaStatus:'APPROVED', date:'2026.03.20', status:'ACTIVE',   trackingId:'TRK_blog_camp4_00002' },
+    { id:6, memberNo:'764302', campaign:'리니지클래식 구매 프로모션',   campCode:'camp4', media:'RPG 팬 카페',     mediaType:'cafe',    mediaStatus:'APPROVED', date:'2026.03.18', status:'ACTIVE',   trackingId:'TRK_cafe_camp4_00001' },
+    { id:7, memberNo:'523047', campaign:'메이플스토리 신규서버 판매 프로모션', campCode:'camp2', media:'게임 아이템 리뷰', mediaType:'blog',    mediaStatus:'APPROVED', date:'2026.03.20', status:'ACTIVE',   trackingId:'TRK_blog_camp2_00001' },
+    { id:8, memberNo:'492081', campaign:'메이플스토리 신규서버 판매 프로모션', campCode:'camp2', media:'게임로그 블로그',  mediaType:'web',     mediaStatus:'APPROVED', date:'2026.03.10', status:'ACTIVE',   trackingId:'TRK_web_camp2_00001' },
+];
+
+let PAYOUT_REQUESTS = [
+    { id:1, memberNo:'847291', heldPoints:262500, amount:30000,  hasId:false, date:'2026.03.22', status:'COMPLETED' },
+    { id:2, memberNo:'764302', heldPoints:124000, amount:124000, hasId:false, date:'2026.03.28', status:'PENDING' },
+    { id:3, memberNo:'523047', heldPoints:89000,  amount:68000,  hasId:true,  date:'2026.03.29', status:'PENDING' },
+];
+
+let POINT_REQUESTS = [
+    { id:1, memberNo:'523047', campaign:'메이플스토리 신규서버 판매 프로모션', trackingId:'TRK_blog_camp2_00001',  perfType:'판매',  txNo:'TX20260329011', txAmount:80000,  amount:800,  date:'2026.03.29', status:'PENDING' },
+    { id:2, memberNo:'764302', campaign:'리니지클래식 구매 프로모션',  trackingId:'TRK_cafe_camp4_00001',  perfType:'구매',  txNo:'TX20260329027', txAmount:126000, amount:2520, date:'2026.03.29', status:'PENDING' },
+    { id:3, memberNo:'847291', campaign:'리니지클래식 구매 프로모션',  trackingId:'TRK_blog_camp4_00001',  perfType:'클릭',  txNo:'-',            txAmount:0,      amount:2,    date:'2026.03.27', status:'APPROVED' },
+    { id:4, memberNo:'491073', campaign:'메이플스토리 신규서버 판매 프로모션', trackingId:'TRK_youtube_camp2_00001', perfType:'판매', txNo:'TX20260328055', txAmount:44000, amount:440,  date:'2026.03.28', status:'REJECTED' },
+];
+
+let POINT_LOG = [
+    // sourceId: 연결된 POINT_REQUESTS id (null이면 별도 자동 이벤트 로그)
+    { id:1, memberNo:'847291', campaign:'리니지클래식 구매 프로모션',   trackingId:'TRK_blog_camp4_00001',  perfType:'클릭',  click:1, join:0, login:0, txNo:'-',            txAmount:0,      point:2,    date:'2026.03.27', sourceId:3 },
+    { id:2, memberNo:'847291', campaign:'리니지클래식 구매 프로모션',   trackingId:'TRK_blog_camp4_00002',  perfType:'구매',  click:0, join:0, login:0, txNo:'TX20260327043', txAmount:210000, point:4200, date:'2026.03.27', sourceId:null },
+    { id:3, memberNo:'492081', campaign:'메이플스토리 신규서버 판매 프로모션', trackingId:'TRK_web_camp2_00001',   perfType:'로그인',click:0, join:0, login:1, txNo:'-',            txAmount:0,      point:10,   date:'2026.03.20', sourceId:null },
+    { id:4, memberNo:'492081', campaign:'메이플스토리 신규서버 판매 프로모션', trackingId:'TRK_web_camp2_00001',   perfType:'판매',  click:0, join:0, login:0, txNo:'TX20260320088', txAmount:35000,  point:350,  date:'2026.03.20', sourceId:null },
+    { id:5, memberNo:'764302', campaign:'리니지클래식 구매 프로모션',   trackingId:'TRK_cafe_camp4_00001',  perfType:'구매',  click:0, join:0, login:0, txNo:'TX20260319044', txAmount:98000,  point:1960, date:'2026.03.19', sourceId:null },
+];
+
+let MEMBERS = [
+    { id:'plan010', medias:1, camps:3, totalP:262500, exchangeP:30000, joinDate:'2026.01.10', status:'NORMAL' },
+    { id:'gamer_j', medias:1, camps:2, totalP:45000, exchangeP:0, joinDate:'2026.02.05', status:'NORMAL' },
+    { id:'sale_king', medias:0, camps:0, totalP:0, exchangeP:0, joinDate:'2026.03.01', status:'NORMAL' },
+    { id:'nova99', medias:1, camps:1, totalP:124000, exchangeP:124000, joinDate:'2026.02.18', status:'ABUSE' },
+    { id:'mmo_pro', medias:0, camps:0, totalP:0, exchangeP:0, joinDate:'2026.03.10', status:'SUSPENDED' },
+];
+
+let _rejectTarget = null; // { type, id }
+let _editCampId = null;
+let _editingNoticeId = null;
+let _deleteCampId = null;
+
+// ═══ TAB 전환 ═══
+function switchTab(id) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    const titles = { overview:'운영 현황', notice:'공지 관리', campaigns:'캠페인 관리', 'media-approve':'매체 승인 내역', 'camp-approve':'캠페인 참여 내역', 'point-log':'포인트 적립 내역', 'payout-approve':'환전 신청 내역', 'point-approve':'포인트 지급 신청 내역', members:'회원 관리' };
+    document.getElementById('header-title').textContent = titles[id] || id;
+    document.querySelectorAll('.sidebar-item').forEach(btn => {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${id}'`)) btn.classList.add('active');
+    });
+    if (id === 'overview') renderOverview();
+    if (id === 'notice') renderNotices();
+    if (id === 'campaigns') renderCampaigns();
+    if (id === 'media-approve') renderMediaApprove();
+    if (id === 'camp-approve') renderCampApprove();
+    if (id === 'point-log') renderPointLog();
+    if (id === 'payout-approve') renderPayoutApprove();
+    if (id === 'point-approve') renderPointApprove();
+    if (id === 'members') renderMembers();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ═══ RENDER: 운영 현황 ═══
+function renderOverview() {
+    // ── 카드 수치 동적 계산 ──
+    const mediaApproved  = MEDIA_REQUESTS.filter(r => r.status === 'APPROVED').length;
+    const mediaPendingCnt= MEDIA_REQUESTS.filter(r => r.status === 'PENDING').length;
+    document.getElementById('stat-media-approved').textContent = mediaApproved;
+    document.getElementById('stat-media-sub').textContent = `심사 대기 ${mediaPendingCnt}건 포함`;
+
+    const campActive     = CAMPAIGNS.filter(c => c.status === 'APPROVED').length;
+    const campExhausted  = CAMPAIGNS.filter(c => c.status === 'APPROVED' && c.remainPoints === 0).length;
+    const campTotal      = CAMPAIGNS.length;
+    document.getElementById('stat-camp-active').textContent = campActive;
+    document.getElementById('stat-camp-sub').textContent =
+        `전체 ${campTotal}개 · 예산소진 ${campExhausted}개 포함`;
+
+    const mediaPendingN  = MEDIA_REQUESTS.filter(r => r.status === 'PENDING').length;
+    const payoutPendingN = PAYOUT_REQUESTS.filter(r => r.status === 'PENDING').length;
+    const pointPendingN  = POINT_REQUESTS.filter(r => r.status === 'PENDING').length;
+    const totalPending   = mediaPendingN + payoutPendingN + pointPendingN;
+    document.getElementById('stat-pending-total').textContent = totalPending;
+    document.getElementById('stat-pending-sub').textContent =
+        `매체 ${mediaPendingN} · 환전 ${payoutPendingN} · 포인트 ${pointPendingN}`;
+
+    const thisMonthPoint = POINT_LOG.reduce((sum, r) => sum + r.point, 0);
+    document.getElementById('stat-point-total').textContent = thisMonthPoint.toLocaleString();
+    document.getElementById('stat-point-sub').textContent = `적립 내역 ${POINT_LOG.length}건 기준`;
+
+    // 매체 대기
+    const mediaPending = MEDIA_REQUESTS.filter(r => r.status === 'PENDING').slice(0, 3);
+    document.getElementById('overview-media-list').innerHTML = mediaPending.map(r => `
+        <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl">
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-gray-800 truncate">${r.name}</p>
+                <p class="text-[10px] text-gray-400">${r.user} · ${r.type}</p>
+            </div>
+            <span class="status-badge s-pending flex-shrink-0">대기</span>
+        </div>`).join('') || '<p class="text-xs text-gray-400 text-center py-4">대기 없음</p>';
+
+    // 최근 캠페인 참여 내역
+    const recentCamp = CAMP_REQUESTS.slice(0, 3);
+    document.getElementById('overview-camp-list').innerHTML = recentCamp.map(r => `
+        <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl">
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-gray-800 truncate">${r.campaign}</p>
+                <p class="text-[10px] text-gray-400 font-mono">${r.trackingId}</p>
+            </div>
+            <span class="status-badge s-approved flex-shrink-0">참여중</span>
+        </div>`).join('') || '<p class="text-xs text-gray-400 text-center py-4">내역 없음</p>';
+
+    // 환전 대기
+    const payPending = PAYOUT_REQUESTS.filter(r => r.status === 'PENDING').slice(0, 3);
+    document.getElementById('overview-payout-list').innerHTML = payPending.map(r => `
+        <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl">
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-gray-800 font-mono tracking-widest">${r.memberNo}</p>
+                <p class="text-[10px] text-gray-400">보유 ${r.heldPoints.toLocaleString()} P</p>
+            </div>
+            <span class="text-xs font-black text-blue-700">${r.amount.toLocaleString()} P</span>
+        </div>`).join('') || '<p class="text-xs text-gray-400 text-center py-4">대기 없음</p>';
+
+    // 캠페인 포인트 현황
+    document.getElementById('overview-camp-points').innerHTML = CAMPAIGNS.map(c => {
+        const usedPct = Math.round((1 - c.remainPoints / c.totalPoints) * 100);
+        const barColor = c.remainPoints === 0 ? 'bg-gray-300' : usedPct >= 80 ? 'bg-red-400' : 'bg-blue-500';
+        const statusMap = { APPROVED:'진행중', READY:'대기', CLOSED:'종료' };
+        const badgeMap  = { APPROVED:'s-approved', READY:'s-waiting', CLOSED:'s-rejected' };
+        return `
+        <div class="flex items-center gap-4">
+            <div class="w-44 flex-shrink-0">
+                <p class="text-xs font-bold text-gray-800 truncate">${c.name}</p>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] text-gray-400">잔여 ${c.remainPoints.toLocaleString()} P / 총 ${c.totalPoints.toLocaleString()} P</span>
+                    <span class="text-[10px] font-bold ${c.remainPoints === 0 ? 'text-gray-400' : 'text-blue-600'}">${usedPct}% 소진</span>
+                </div>
+                <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full ${barColor} rounded-full" style="width:${usedPct}%"></div>
+                </div>
+            </div>
+            <span class="status-badge ${badgeMap[c.status]} flex-shrink-0">${statusMap[c.status]}</span>
+        </div>`;
+    }).join('');
+}
+
+// ═══ RENDER: 공지 ═══
+function renderNotices() {
+    const tbody = document.getElementById('notice-table-body');
+    tbody.innerHTML = NOTICES.map((n, i) => `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 text-lg">${n.emoji}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-800">${n.title}</td>
+            <td class="px-5 py-3.5 text-gray-500">${n.desc}</td>
+            <td class="px-5 py-3.5 text-center">
+                <button onclick="toggleNotice(${n.id})" class="text-[10px] font-bold px-2.5 py-1 rounded-full ${n.visible ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}">
+                    ${n.visible ? '노출' : '숨김'}
+                </button>
+            </td>
+            <td class="px-5 py-3.5 text-center">
+                <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="openEditNoticeModal(${n.id})" class="btn-sm bg-blue-50 text-blue-700 hover:bg-blue-100">수정</button>
+                    <button onclick="deleteNotice(${n.id})" class="btn-sm reject-btn">삭제</button>
+                </div>
+            </td>
+        </tr>`).join('');
+}
+
+function toggleNotice(id) {
+    const n = NOTICES.find(x => x.id === id);
+    if (n) { n.visible = !n.visible; renderNotices(); showToast(`공지를 ${n.visible ? '노출' : '숨김'} 처리했습니다.`); }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function deleteNotice(id) {
+    NOTICES = NOTICES.filter(x => x.id !== id);
+    renderNotices();
+    showToast('공지가 삭제되었습니다.');
+}
+function openNoticeModal() {
+    _editingNoticeId = null;
+    document.getElementById('notice-modal-title').textContent = '공지 등록';
+    document.getElementById('notice-submit-btn').textContent = '등록';
+    document.getElementById('notice-emoji').value = '📢';
+    document.getElementById('notice-title').value = '';
+    document.getElementById('notice-desc').value = '';
+    document.getElementById('notice-visible').checked = true;
+    openModal('notice-modal');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function openEditNoticeModal(id) {
+    const n = NOTICES.find(x => x.id === id);
+    if (!n) return;
+    _editingNoticeId = id;
+    document.getElementById('notice-modal-title').textContent = '공지 수정';
+    document.getElementById('notice-submit-btn').textContent = '저장';
+    document.getElementById('notice-emoji').value = n.emoji;
+    document.getElementById('notice-title').value = n.title;
+    document.getElementById('notice-desc').value = n.desc;
+    document.getElementById('notice-visible').checked = n.visible;
+    openModal('notice-modal');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function submitNotice() {
+    const title = document.getElementById('notice-title').value.trim();
+    const desc  = document.getElementById('notice-desc').value.trim();
+    if (!title) { showToast('제목을 입력해주세요.'); return; }
+    const emoji   = document.getElementById('notice-emoji').value;
+    const visible = document.getElementById('notice-visible').checked;
+    if (_editingNoticeId !== null) {
+        const n = NOTICES.find(x => x.id === _editingNoticeId);
+        if (n) { n.emoji = emoji; n.title = title; n.desc = desc; n.visible = visible; }
+        closeModal('notice-modal');
+        renderNotices();
+        showToast('공지가 수정되었습니다. 이용자 대시보드에 즉시 반영됩니다.');
+    } else {
+        NOTICES.push({ id: Date.now(), emoji, title, desc, visible });
+        closeModal('notice-modal');
+        renderNotices();
+        showToast('공지가 등록되었습니다. 이용자 대시보드에 즉시 반영됩니다.');
+    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ═══ RENDER: 캠페인 ═══
+function renderCampaigns() {
+    const tbody = document.getElementById('camp-table-body');
+    const statusMap = { APPROVED:'진행중', READY:'대기', CLOSED:'종료' };
+    const badgeMap  = { APPROVED:'s-approved', READY:'s-waiting', CLOSED:'s-rejected' };
+    tbody.innerHTML = CAMPAIGNS.map((c, i) => {
+        const isExhausted = c.remainPoints === 0;
+        const canJoin = c.status === 'APPROVED' && !isExhausted;
+        return `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5">
+                <p class="font-bold text-gray-800 max-w-[200px] truncate">${c.name}</p>
+            </td>
+            <td class="px-5 py-3.5 text-center text-gray-500 text-[11px] whitespace-nowrap">
+                ${c.startDate && c.endDate ? `${c.startDate}<br><span class="text-gray-300">~</span><br>${c.endDate}` : '<span class="text-gray-300">-</span>'}
+            </td>
+            <td class="px-5 py-3.5 text-right font-bold text-gray-700">${c.totalPoints.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-gray-500">${c.dailyPoints.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right font-bold ${isExhausted ? 'text-gray-400' : 'text-blue-600'}">${isExhausted ? '소진' : c.remainPoints.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-center text-gray-600">${c.commissionDetail.map(d => d.type + ' ' + d.val).join(' / ')}</td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge ${badgeMap[c.status]}">${statusMap[c.status]}</span></td>
+            <td class="px-5 py-3.5 text-center">
+                ${canJoin
+                    ? '<span class="status-badge s-approved">가능</span>'
+                    : `<span class="status-badge s-rejected">${c.status === 'CLOSED' ? '종료' : c.status === 'READY' ? '대기중' : '예산소진'}</span>`}
+            </td>
+            <td class="px-5 py-3.5 text-center">
+                <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="editCamp(${c.id})" class="btn-sm bg-blue-50 text-blue-700 hover:bg-blue-100">수정</button>
+                    <button onclick="deleteCamp(${c.id})" class="btn-sm reject-btn">삭제</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function openCampModal(campId) {
+    _editCampId = campId || null;
+    document.getElementById('camp-modal-title').textContent = campId ? '캠페인 수정' : '캠페인 등록';
+    document.getElementById('commission-rows').innerHTML = '';
+    if (campId) {
+        const c = CAMPAIGNS.find(x => x.id === campId);
+        document.getElementById('camp-name').value   = c.name;
+        document.getElementById('camp-status').value = c.status;
+        document.getElementById('camp-total').value  = c.totalPoints;
+        document.getElementById('camp-daily').value  = c.dailyPoints;
+        document.getElementById('camp-start').value  = c.startDate ? c.startDate.replace(/\./g, '-') : '';
+        document.getElementById('camp-end').value    = c.endDate   ? c.endDate.replace(/\./g, '-')   : '';
+        c.commissionDetail.forEach(d => addCommissionRow(d.type, d.val));
+    } else {
+        document.getElementById('camp-name').value   = '';
+        document.getElementById('camp-total').value  = '';
+        document.getElementById('camp-daily').value  = '';
+        document.getElementById('camp-start').value  = '';
+        document.getElementById('camp-end').value    = '';
+        addCommissionRow();
+    }
+    openModal('camp-modal');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function editCamp(id) { openCampModal(id); }
+
+function deleteCamp(id) {
+    const c = CAMPAIGNS.find(x => x.id === id);
+    if (!c) return;
+    _deleteCampId = id;
+    document.getElementById('camp-delete-name').textContent = c.name;
+    openModal('camp-delete-modal');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function confirmDeleteCamp() {
+    CAMPAIGNS = CAMPAIGNS.filter(x => x.id !== _deleteCampId);
+    _deleteCampId = null;
+    closeModal('camp-delete-modal');
+    renderCampaigns();
+    showToast('캠페인이 삭제되었습니다.');
+}
+
+function addCommissionRow(type = '', val = '') {
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2';
+    row.innerHTML = `
+        <select class="comm-type flex-1 text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+            <option ${type==='클릭'?'selected':''}>클릭</option>
+            <option ${type==='가입'?'selected':''}>가입</option>
+            <option ${type==='로그인'?'selected':''}>로그인</option>
+            <option ${type==='구매'?'selected':''}>구매</option>
+            <option ${type==='판매'?'selected':''}>판매</option>
+        </select>
+        <input type="text" value="${val}" placeholder="예: 2.5% / 건" class="comm-val flex-1 text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+        <button onclick="this.parentElement.remove()" class="text-gray-300 hover:text-red-400 flex-shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+    document.getElementById('commission-rows').appendChild(row);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function submitCamp() {
+    const name  = document.getElementById('camp-name').value.trim();
+    const total = parseInt(document.getElementById('camp-total').value);
+    const daily = parseInt(document.getElementById('camp-daily').value);
+    const startRaw = document.getElementById('camp-start').value;
+    const endRaw   = document.getElementById('camp-end').value;
+    if (!name || !total || !daily) { showToast('필수 항목을 모두 입력해주세요.'); return; }
+    if (!startRaw || !endRaw)      { showToast('캠페인 기간을 설정해주세요.'); return; }
+    if (startRaw > endRaw)         { showToast('종료일은 시작일 이후여야 합니다.'); return; }
+    const startDate = startRaw.replace(/-/g, '.');
+    const endDate   = endRaw.replace(/-/g, '.');
+    const commTypes = document.querySelectorAll('.comm-type');
+    const commVals  = document.querySelectorAll('.comm-val');
+    const commissionDetail = Array.from(commTypes).map((el, i) => ({ type: el.value, val: commVals[i].value }));
+    if (_editCampId) {
+        const c = CAMPAIGNS.find(x => x.id === _editCampId);
+        Object.assign(c, { name, status: document.getElementById('camp-status').value, totalPoints: total, dailyPoints: daily, startDate, endDate, commissionDetail });
+        showToast('캠페인이 수정되었습니다.');
+    } else {
+        CAMPAIGNS.push({ id: Date.now(), name, status: document.getElementById('camp-status').value, totalPoints: total, dailyPoints: daily, remainPoints: total, startDate, endDate, commissionDetail });
+        showToast('캠페인이 등록되었습니다.');
+    }
+    closeModal('camp-modal');
+    renderCampaigns();
+}
+
+// ═══ 공통 필터 유틸 ═══
+function parseDate(str) {
+    // "2026.03.28" → Date
+    if (!str) return null;
+    return new Date(str.replace(/\./g, '-'));
+}
+function inDateRange(dateStr, fromVal, toVal) {
+    const d = parseDate(dateStr);
+    if (!d) return true;
+    if (fromVal) { const f = new Date(fromVal); if (d < f) return false; }
+    if (toVal)   { const t = new Date(toVal);   t.setHours(23,59,59); if (d > t) return false; }
+    return true;
+}
+
+// ═══ RENDER: 매체 승인 내역 ═══
+function renderMediaApprove(data) {
+    const rows = data || MEDIA_REQUESTS;
+    const tbody = document.getElementById('media-approve-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-xs text-gray-400 py-10">검색 결과가 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = rows.map((r, i) => `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-800">${r.memberNo}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-700">${r.name}</td>
+            <td class="px-5 py-3.5 text-gray-500">${r.type}</td>
+            <td class="px-5 py-3.5 text-blue-600 underline cursor-pointer">${r.url}</td>
+            <td class="px-5 py-3.5 text-center text-gray-400">${r.date}</td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge ${r.status==='PENDING'?'s-pending':r.status==='APPROVED'?'s-approved':'s-rejected'}">${r.status==='PENDING'?'대기':r.status==='APPROVED'?'승인':'거부'}</span></td>
+            <td class="px-5 py-3.5 text-center">
+                ${r.status === 'PENDING' ? `
+                <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="approveItem('media', ${r.id})" class="btn-sm approve-btn">승인</button>
+                    <button onclick="openRejectModal('media', ${r.id})" class="btn-sm reject-btn">거부</button>
+                </div>` : '<span class="text-[10px] text-gray-300">처리 완료</span>'}
+            </td>
+        </tr>`).join('');
+    updateBadges();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function filterMedia() {
+    const member = document.getElementById('media-search-member').value.trim();
+    const from   = document.getElementById('media-date-from').value;
+    const to     = document.getElementById('media-date-to').value;
+    const filtered = MEDIA_REQUESTS.filter(r =>
+        (!member || r.memberNo.includes(member)) &&
+        inDateRange(r.date, from, to)
+    );
+    renderMediaApprove(filtered);
+}
+
+// ═══ RENDER: 캠페인 참여 내역 ═══
+function renderCampApprove(data) {
+    const rows = data || CAMP_REQUESTS;
+    const tbody = document.getElementById('camp-approve-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-xs text-gray-400 py-10">검색 결과가 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = rows.map((r, i) => `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 font-black text-gray-700 tracking-widest">${r.memberNo}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-800 max-w-[180px] truncate">${r.campaign}</td>
+            <td class="px-5 py-3.5 text-gray-500">${r.media}</td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge s-approved">승인</span></td>
+            <td class="px-5 py-3.5">
+                <span class="font-mono text-[11px] bg-gray-100 text-blue-700 px-2.5 py-1 rounded-lg font-bold tracking-tight">${r.trackingId}</span>
+            </td>
+            <td class="px-5 py-3.5 text-center text-gray-400">${r.date}</td>
+        </tr>`).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function filterCamp() {
+    const member = document.getElementById('camp-search-member').value.trim();
+    const from   = document.getElementById('camp-date-from').value;
+    const to     = document.getElementById('camp-date-to').value;
+    const filtered = CAMP_REQUESTS.filter(r =>
+        (!member || r.memberNo.includes(member)) &&
+        inDateRange(r.date, from, to)
+    );
+    renderCampApprove(filtered);
+}
+
+// ═══ RENDER: 환전 신청 내역 ═══
+function renderPayoutApprove(data) {
+    const rows = data || PAYOUT_REQUESTS;
+    const tbody = document.getElementById('payout-approve-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-xs text-gray-400 py-10">검색 결과가 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = rows.map((r, i) => `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 font-black text-gray-700 tracking-widest">${r.memberNo}</td>
+            <td class="px-5 py-3.5 text-right font-bold text-gray-500">${r.heldPoints.toLocaleString()} P</td>
+            <td class="px-5 py-3.5 text-right font-black text-blue-700">${r.amount.toLocaleString()} P</td>
+            <td class="px-5 py-3.5 text-center">
+                ${r.amount > 50000
+                    ? `<span class="text-[10px] font-bold ${r.hasId ? 'text-green-600' : 'text-red-500'}">${r.hasId ? '✓ 첨부' : '✗ 미첨부'}</span>`
+                    : '<span class="text-[10px] text-gray-300">불필요</span>'}
+            </td>
+            <td class="px-5 py-3.5 text-center text-gray-400">${r.date}</td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge ${r.status==='PENDING'?'s-pending':r.status==='COMPLETED'?'s-approved':'s-rejected'}">${r.status==='PENDING'?'대기':r.status==='COMPLETED'?'지급 완료':'거부'}</span></td>
+            <td class="px-5 py-3.5 text-center">
+                ${r.status === 'PENDING' ? `
+                <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="approveItem('payout', ${r.id})" class="btn-sm approve-btn">승인</button>
+                    <button onclick="openRejectModal('payout', ${r.id})" class="btn-sm reject-btn">거부</button>
+                </div>` : '<span class="text-[10px] text-gray-300">처리 완료</span>'}
+            </td>
+        </tr>`).join('');
+    updateBadges();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function filterPayout() {
+    const member = document.getElementById('payout-search-member').value.trim();
+    const from   = document.getElementById('payout-date-from').value;
+    const to     = document.getElementById('payout-date-to').value;
+    const filtered = PAYOUT_REQUESTS.filter(r =>
+        (!member || r.memberNo.includes(member)) &&
+        inDateRange(r.date, from, to)
+    );
+    renderPayoutApprove(filtered);
+}
+
+// ═══ RENDER: 포인트 지급 신청 내역 ═══
+function renderPointApprove(data) {
+    const rows = data || POINT_REQUESTS;
+    const tbody = document.getElementById('point-approve-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-xs text-gray-400 py-10">검색 결과가 없습니다.</td></tr>'; return; }
+    tbody.innerHTML = rows.map((r, i) => `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 font-black text-gray-700 tracking-widest">${r.memberNo}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-800 max-w-[160px] truncate">${r.campaign}</td>
+            <td class="px-5 py-3.5"><span class="font-mono text-[11px] bg-gray-100 text-blue-700 px-2.5 py-1 rounded-lg font-bold tracking-tight">${r.trackingId}</span></td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge s-waiting">${r.perfType}</span></td>
+            <td class="px-5 py-3.5 text-right font-black text-green-700">${r.amount.toLocaleString()} P</td>
+            <td class="px-5 py-3.5 text-center text-gray-400">${r.date}</td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge ${r.status==='PENDING'?'s-pending':r.status==='APPROVED'?'s-approved':'s-rejected'}">${r.status==='PENDING'?'대기':r.status==='APPROVED'?'지급 완료':'거부'}</span></td>
+            <td class="px-5 py-3.5 text-center">
+                ${r.status === 'PENDING' ? `
+                <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="approveItem('point', ${r.id})" class="btn-sm approve-btn">승인</button>
+                    <button onclick="openRejectModal('point', ${r.id})" class="btn-sm reject-btn">거부</button>
+                </div>` : '<span class="text-[10px] text-gray-300">처리 완료</span>'}
+            </td>
+        </tr>`).join('');
+    updateBadges();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function filterPoint() {
+    const member = document.getElementById('point-search-member').value.trim();
+    const from   = document.getElementById('point-date-from').value;
+    const to     = document.getElementById('point-date-to').value;
+    const filtered = POINT_REQUESTS.filter(r =>
+        (!member || r.memberNo.includes(member)) &&
+        inDateRange(r.date, from, to)
+    );
+    renderPointApprove(filtered);
+}
+
+// ═══ RENDER: 포인트 적립 내역 ═══
+function renderPointLog(data) {
+    const rows = data || POINT_LOG;
+    const tbody = document.getElementById('point-log-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="12" class="text-center text-xs text-gray-400 py-10">검색 결과가 없습니다.</td></tr>'; return; }
+    const typeColor = { '구매':'bg-blue-50 text-blue-700', '판매':'bg-purple-50 text-purple-700', '가입':'bg-green-50 text-green-700', '로그인':'bg-yellow-50 text-yellow-700', '클릭':'bg-gray-100 text-gray-600' };
+    tbody.innerHTML = rows.map((r, i) => {
+        const isClick  = r.perfType === '클릭';
+        const isJoin   = r.perfType === '가입';
+        const isLogin  = r.perfType === '로그인';
+        const clickCell  = isClick  ? '<span class="font-bold text-blue-600">✓</span>'   : '<span class="text-gray-300">-</span>';
+        const joinCell   = isJoin   ? `<span class="font-mono font-bold text-green-700 text-[11px]">${r.memberNo}</span>`  : '<span class="text-gray-300">-</span>';
+        const loginCell  = isLogin  ? `<span class="font-mono font-bold text-yellow-700 text-[11px]">${r.memberNo}</span>` : '<span class="text-gray-300">-</span>';
+        return `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 font-black text-gray-700 tracking-widest">${r.memberNo}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-800 max-w-[160px] truncate">${r.campaign}</td>
+            <td class="px-5 py-3.5"><span class="font-mono text-[11px] bg-gray-100 text-blue-700 px-2.5 py-1 rounded-lg font-bold tracking-tight">${r.trackingId}</span></td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge ${typeColor[r.perfType] || 'bg-gray-100 text-gray-600'}">${r.perfType}</span></td>
+            <td class="px-5 py-3.5 text-center">${clickCell}</td>
+            <td class="px-5 py-3.5 text-center">${joinCell}</td>
+            <td class="px-5 py-3.5 text-center">${loginCell}</td>
+            <td class="px-5 py-3.5 font-mono text-gray-500 text-[11px]">${r.txNo}</td>
+            <td class="px-5 py-3.5 text-right text-gray-600">${r.txAmount ? r.txAmount.toLocaleString() + ' 원' : '-'}</td>
+            <td class="px-5 py-3.5 text-right font-black text-green-700">${r.point.toLocaleString()} P</td>
+            <td class="px-5 py-3.5 text-center text-gray-400">${r.date}</td>
+        </tr>`;
+    }).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function filterPointLog() {
+    const member = document.getElementById('pointlog-search-member').value.trim();
+    const from   = document.getElementById('pointlog-date-from').value;
+    const to     = document.getElementById('pointlog-date-to').value;
+    const filtered = POINT_LOG.filter(r =>
+        (!member || r.memberNo.includes(member)) &&
+        inDateRange(r.date, from, to)
+    );
+    renderPointLog(filtered);
+}
+
+// ═══ 필터 초기화 ═══
+function resetFilter(type) {
+    if (type === 'media') {
+        document.getElementById('media-search-member').value = '';
+        document.getElementById('media-date-from').value = '';
+        document.getElementById('media-date-to').value = '';
+        renderMediaApprove();
+    } else if (type === 'camp') {
+        document.getElementById('camp-search-member').value = '';
+        document.getElementById('camp-date-from').value = '';
+        document.getElementById('camp-date-to').value = '';
+        renderCampApprove();
+    } else if (type === 'payout') {
+        document.getElementById('payout-search-member').value = '';
+        document.getElementById('payout-date-from').value = '';
+        document.getElementById('payout-date-to').value = '';
+        renderPayoutApprove();
+    } else if (type === 'point') {
+        document.getElementById('point-search-member').value = '';
+        document.getElementById('point-date-from').value = '';
+        document.getElementById('point-date-to').value = '';
+        renderPointApprove();
+    } else if (type === 'point-log') {
+        document.getElementById('pointlog-search-member').value = '';
+        document.getElementById('pointlog-date-from').value = '';
+        document.getElementById('pointlog-date-to').value = '';
+        renderPointLog();
+    }
+}
+
+// ═══ CSV 다운로드 ═══
+function downloadCSV(type) {
+    let headers, rows, filename;
+    if (type === 'media') {
+        headers = ['순서','회원번호','매체명','유형','URL','신청일','상태'];
+        rows = MEDIA_REQUESTS.map((r, i) => [i+1, r.memberNo, r.name, r.type, r.url, r.date, r.status==='PENDING'?'대기':r.status==='APPROVED'?'승인':'거부']);
+        filename = '매체_승인_내역.csv';
+    } else if (type === 'camp') {
+        headers = ['순서','회원번호','캠페인','매체','매체승인','트래킹ID','참여일'];
+        rows = CAMP_REQUESTS.map((r, i) => [i+1, r.memberNo, r.campaign, r.media, '승인', r.trackingId, r.date]);
+        filename = '캠페인_참여_내역.csv';
+    } else if (type === 'payout') {
+        headers = ['순서','회원번호','보유포인트','신청포인트','신분증','신청일','상태'];
+        rows = PAYOUT_REQUESTS.map((r, i) => [i+1, r.memberNo, r.heldPoints, r.amount, r.amount>50000?(r.hasId?'첨부':'미첨부'):'불필요', r.date, r.status==='PENDING'?'대기':r.status==='COMPLETED'?'지급완료':'거부']);
+        filename = '환전_신청_내역.csv';
+    } else if (type === 'point') {
+        headers = ['순서','회원번호','캠페인','트래킹ID','성과유형','지급포인트','발생일','상태'];
+        rows = POINT_REQUESTS.map((r, i) => [i+1, r.memberNo, r.campaign, r.trackingId, r.perfType, r.amount, r.date, r.status==='PENDING'?'대기':r.status==='APPROVED'?'지급완료':'거부']);
+        filename = '포인트_지급_신청_내역.csv';
+    } else if (type === 'point-log') {
+        headers = ['순서','회원번호','캠페인','트래킹ID','성과유형','클릭','가입','로그인','거래번호','거래금액','지급포인트','발생일'];
+        rows = POINT_LOG.map((r, i) => [i+1, r.memberNo, r.campaign, r.trackingId, r.perfType, r.click?'✓':'-', r.join?'✓':'-', r.login?'✓':'-', r.txNo, r.txAmount||0, r.point, r.date]);
+        filename = '포인트_적립_내역.csv';
+    }
+    const bom = '\uFEFF';
+    const csv = bom + [headers, ...rows].map(row => row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    showToast(`${filename} 파일을 다운로드했습니다.`);
+}
+
+// ═══ RENDER: 회원 ═══
+function renderMembers() {
+    const tbody = document.getElementById('members-table-body');
+    const statusMap = { NORMAL:'정상', ABUSE:'어뷰징 의심', SUSPENDED:'이용 정지' };
+    const badgeMap  = { NORMAL:'s-approved', ABUSE:'s-pending', SUSPENDED:'s-rejected' };
+    tbody.innerHTML = MEMBERS.map((m, i) => `
+        <tr class="tbl-row border-b border-gray-50 text-xs">
+            <td class="px-5 py-3.5 text-center text-gray-400 font-bold">${i + 1}</td>
+            <td class="px-5 py-3.5 font-bold text-gray-800">${m.id}</td>
+            <td class="px-5 py-3.5 text-center text-gray-600">${m.medias}</td>
+            <td class="px-5 py-3.5 text-center text-gray-600">${m.camps}</td>
+            <td class="px-5 py-3.5 text-right font-bold text-gray-700">${m.totalP.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-gray-500">${m.exchangeP.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-center text-gray-400">${m.joinDate}</td>
+            <td class="px-5 py-3.5 text-center"><span class="status-badge ${badgeMap[m.status]}">${statusMap[m.status]}</span></td>
+            <td class="px-5 py-3.5 text-center">
+                <div class="flex items-center justify-center gap-1.5">
+                    ${m.status !== 'SUSPENDED'
+                        ? `<button onclick="suspendMember('${m.id}')" class="btn-sm reject-btn">정지</button>`
+                        : `<button onclick="restoreMember('${m.id}')" class="btn-sm approve-btn">복원</button>`}
+                    ${m.status === 'ABUSE' ? `<button onclick="clearAbuse('${m.id}')" class="btn-sm bg-gray-100 text-gray-600 hover:bg-gray-200">정상화</button>` : ''}
+                </div>
+            </td>
+        </tr>`).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ═══ 승인 / 거부 처리 ═══
+function approveItem(type, id) {
+    if (type === 'media') {
+        const r = MEDIA_REQUESTS.find(x => x.id === id); if (r) r.status = 'APPROVED';
+        renderMediaApprove(); showToast('매체가 승인되었습니다. 관리자 메시지가 발송됩니다.');
+    } else if (type === 'payout') {
+        const r = PAYOUT_REQUESTS.find(x => x.id === id); if (r) r.status = 'COMPLETED';
+        renderPayoutApprove(); showToast('환전이 승인되었습니다. 마일리지 1:1 전환 처리됩니다.');
+    } else if (type === 'point') {
+        const r = POINT_REQUESTS.find(x => x.id === id);
+        if (r) {
+            // 예산 소진 캠페인은 승인 불가
+            const camp = CAMPAIGNS.find(c => c.name === r.campaign);
+            if (camp && camp.remainPoints === 0) {
+                showToast('예산이 소진된 캠페인입니다. 포인트를 지급할 수 없습니다.');
+                return;
+            }
+            r.status = 'APPROVED';
+            // 승인 즉시 포인트 적립 내역(POINT_LOG)에 로그 자동 적재
+            const isClick = r.perfType === '클릭';
+            const isJoin  = r.perfType === '가입';
+            const isLogin = r.perfType === '로그인';
+            POINT_LOG.unshift({
+                id:        Date.now(),
+                memberNo:  r.memberNo,
+                campaign:  r.campaign,
+                trackingId:r.trackingId,
+                perfType:  r.perfType,
+                click:     isClick ? 1 : 0,
+                join:      isJoin  ? 1 : 0,
+                login:     isLogin ? 1 : 0,
+                txNo:      r.txNo,
+                txAmount:  r.txAmount,
+                point:     r.amount,
+                date:      r.date,
+                sourceId:  r.id,
+            });
+        }
+        renderPointApprove();
+        renderPointLog();
+        showToast('포인트 지급이 승인되었습니다. 적립 내역에 자동 기록되었습니다.');
+    }
+}
+
+function openRejectModal(type, id) {
+    _rejectTarget = { type, id };
+    document.getElementById('reject-reason').value = '';
+    openModal('reject-modal');
+}
+function confirmReject() {
+    if (!_rejectTarget) return;
+    const { type, id } = _rejectTarget;
+    if (type === 'media') {
+        const r = MEDIA_REQUESTS.find(x => x.id === id); if (r) r.status = 'REJECTED';
+        closeModal('reject-modal'); renderMediaApprove(); showToast('매체 심사가 거부되었습니다. 관리자 메시지가 발송됩니다.');
+    } else if (type === 'payout') {
+        const r = PAYOUT_REQUESTS.find(x => x.id === id); if (r) r.status = 'REJECTED';
+        closeModal('reject-modal'); renderPayoutApprove(); showToast('환전이 거부되었습니다. 포인트가 환전 가능 포인트로 재적립됩니다.');
+    } else if (type === 'point') {
+        const r = POINT_REQUESTS.find(x => x.id === id); if (r) r.status = 'REJECTED';
+        closeModal('reject-modal'); renderPointApprove(); showToast('포인트 지급이 거부되었습니다. 해당 건은 무효 처리됩니다.');
+    }
+}
+
+function suspendMember(id) { const m = MEMBERS.find(x => x.id === id); if (m) { m.status = 'SUSPENDED'; renderMembers(); showToast(`${id} 회원을 이용 정지했습니다.`); } }
+function restoreMember(id) { const m = MEMBERS.find(x => x.id === id); if (m) { m.status = 'NORMAL'; renderMembers(); showToast(`${id} 회원을 정상 복원했습니다.`); } }
+function clearAbuse(id) { const m = MEMBERS.find(x => x.id === id); if (m) { m.status = 'NORMAL'; renderMembers(); showToast(`${id} 어뷰징 의심을 정상화했습니다.`); } }
+
+// ═══ 배지 업데이트 ═══
+function updateBadges() {
+    const mc  = MEDIA_REQUESTS.filter(r => r.status === 'PENDING').length;
+    const pc  = PAYOUT_REQUESTS.filter(r => r.status === 'PENDING').length;
+    const ptc = POINT_REQUESTS.filter(r => r.status === 'PENDING').length;
+    const bm  = document.getElementById('badge-media');
+    const bp  = document.getElementById('badge-payout');
+    const bpt = document.getElementById('badge-point');
+    if (bm)  { bm.textContent  = mc;  bm.style.display  = mc  ? '' : 'none'; }
+    if (bp)  { bp.textContent  = pc;  bp.style.display  = pc  ? '' : 'none'; }
+    if (bpt) { bpt.textContent = ptc; bpt.style.display = ptc ? '' : 'none'; }
+
+    // 운영 현황 카드 수치 실시간 동기화
+    const totalPending = mc + pc + ptc;
+    const elTotal = document.getElementById('stat-pending-total');
+    const elSub   = document.getElementById('stat-pending-sub');
+    if (elTotal) elTotal.textContent = totalPending;
+    if (elSub)   elSub.textContent   = `매체 ${mc} · 환전 ${pc} · 포인트 ${ptc}`;
+
+    const elMediaApproved = document.getElementById('stat-media-approved');
+    const elMediaSub      = document.getElementById('stat-media-sub');
+    if (elMediaApproved) elMediaApproved.textContent = MEDIA_REQUESTS.filter(r => r.status === 'APPROVED').length;
+    if (elMediaSub)      elMediaSub.textContent      = `심사 대기 ${mc}건 포함`;
+
+    const elPointTotal = document.getElementById('stat-point-total');
+    const elPointSub   = document.getElementById('stat-point-sub');
+    if (elPointTotal) elPointTotal.textContent = POINT_LOG.reduce((s, r) => s + r.point, 0).toLocaleString();
+    if (elPointSub)   elPointSub.textContent   = `적립 내역 ${POINT_LOG.length}건 기준`;
+}
+
+// ═══ MODAL / TOAST ═══
+function openModal(id)  { const el = document.getElementById(id); el.classList.remove('hidden'); el.style.display = 'flex'; }
+function closeModal(id) { const el = document.getElementById(id); el.classList.add('hidden'); el.style.display = 'none'; }
+function showToast(msg) {
+    document.getElementById('toast-msg').innerText = msg;
+    const t = document.getElementById('toast');
+    t.style.opacity = 1; t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => { t.style.opacity = 0; t.style.transform = 'translateX(-50%) translateY(8px)'; }, 2800);
+}
+
+window.onload = () => {
+    switchTab('overview');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+</script>
+</body>
+</html>
