@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITEMMANIA PARTNERS | 이용자 포털</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Pretendard', sans-serif; }
+        body { background: #F4F5F7; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar-item { transition: all 0.18s; }
+        .sidebar-item.active { background: #EFF6FF; color: #2563EB; font-weight: 700; }
+        .sidebar-item.active svg { color: #2563EB; }
+        .sidebar-item:not(.active):hover { background: #F9FAFB; }
+
+        .status-badge { font-size: 10px; padding: 3px 10px; border-radius: 99px; font-weight: 700; letter-spacing: 0.02em; }
+        .s-pending   { background:#FEF3C7; color:#92400E; }
+        .s-approved  { background:#DCFCE7; color:#166534; }
+        .s-rejected  { background:#FEE2E2; color:#991B1B; }
+        .s-waiting   { background:#F1F5F9; color:#475569; }
+        .s-need-id   { background:#FFF7ED; color:#9A3412; border:1px solid #FED7AA; }
+
+        .card { background: #fff; border-radius: 20px; border: 1px solid #E9ECF0; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+        .card-lg { border-radius: 28px; }
+        .btn-primary { background: #111827; color: #fff; border-radius: 14px; font-weight: 700; font-size: 13px; padding: 10px 20px; transition: all .18s; }
+        .btn-primary:hover { background: #374151; transform: translateY(-1px); }
+        .btn-danger { background: #DC2626; color: #fff; border-radius: 14px; font-weight: 700; font-size: 13px; padding: 10px 20px; transition: all .18s; }
+        .btn-danger:hover { background: #B91C1C; }
+        .btn-ghost { background: #F3F4F6; color: #374151; border-radius: 14px; font-weight: 700; font-size: 13px; padding: 10px 20px; transition: all .18s; }
+        .btn-ghost:hover { background: #E5E7EB; }
+
+        .metric-card:hover .metric-icon { transform: scale(1.1); }
+        .metric-icon { transition: transform .2s; }
+
+        .campaign-card { transition: all .22s; }
+        .campaign-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.09); }
+
+        .bar-col { transition: background .2s; }
+        .bar-col:hover .bar-fill { background: #DC2626 !important; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .toast-anim { transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+        
+        /* Modal */
+        .modal-bg { backdrop-filter: blur(6px); background: rgba(0,0,0,.55); }
+
+        /* Code block */
+        .code-block { background: #0D1117; border-radius: 16px; padding: 18px 22px; font-family: 'Courier New', monospace; font-size: 11px; color: #79C0FF; line-height: 1.6; position: relative; }
+        
+        /* Track link badge */
+        .track-badge { background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+
+        /* Performance bar chart */
+        .perf-bar { background: #F0F2F5; border-radius: 6px 6px 0 0; transition: all .3s; position: relative; }
+        .perf-bar.today { background: linear-gradient(180deg, #EF4444, #DC2626); box-shadow: 0 -4px 16px rgba(220,38,38,.25); }
+        .perf-bar-wrap:hover .perf-bar:not(.today) { background: #D1D5DB; }
+
+        /* Mobile bottom tab bar */
+        .tab-btn { transition: color .15s; }
+        .tab-btn.active { color: #2563EB; }
+        .tab-btn.active span { color: #2563EB; }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+        /* Mobile drawer transition */
+        #mobile-drawer.open { transform: translateX(0); }
+
+        /* Welcome banner mobile */
+        @media (max-width: 768px) {
+            .welcome-stats { flex-direction: column; gap: 12px; }
+            .welcome-stats .w-px { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="flex h-screen overflow-hidden">
+
+    <!-- ═══ SIDEBAR — 데스크탑 전용 ═══ -->
+    <aside id="sidebar" class="w-60 bg-white border-r border-gray-100 flex-col hidden lg:flex z-20 flex-shrink-0">
+        <!-- Logo -->
+        <div class="px-6 py-6 border-b border-gray-50">
+            <div class="flex items-center gap-2.5 mb-1">
+                <div class="bg-blue-600 p-1.5 rounded-xl text-white shadow-sm shadow-blue-200">
+                    <i data-lucide="sword" class="w-4 h-4"></i>
+                </div>
+                <span class="text-lg font-black tracking-tight text-gray-900">ITEMMANIA</span>
+            </div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-9">Partners</p>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto no-scrollbar">
+            <button onclick="switchTab('guide')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="book-open" class="w-4 h-4 flex-shrink-0"></i><span>파트너스 안내</span>
+            </button>
+            <button onclick="switchTab('dashboard')" class="sidebar-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 flex-shrink-0"></i><span>대시보드</span>
+            </button>
+            <button onclick="switchTab('media')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="monitor" class="w-4 h-4 flex-shrink-0"></i><span>나의 매체 관리</span>
+            </button>
+            <button onclick="switchTab('campaigns')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i><span>캠페인 탐색</span>
+            </button>
+            <button onclick="switchTab('banners')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="image" class="w-4 h-4 flex-shrink-0"></i><span>승인 및 배너함</span>
+            </button>
+            <button onclick="switchTab('performance')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="bar-chart-2" class="w-4 h-4 flex-shrink-0"></i><span>성과 리포트</span>
+            </button>
+
+            <button onclick="switchTab('payouts')" class="sidebar-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="wallet" class="w-4 h-4 flex-shrink-0"></i><span>포인트 내역</span>
+            </button>
+        </nav>
+
+        <!-- User Card -->
+        <div class="p-3 border-t border-gray-50">
+            <div class="bg-gray-50 rounded-2xl p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-black text-sm shadow-sm">M</div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-gray-800 truncate">plan010</p>
+                    </div>
+                    <button class="ml-auto text-gray-300 hover:text-gray-500">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══ 모바일 드로어 (overlay) ═══ -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden" onclick="closeMobileMenu()"></div>
+    <aside id="mobile-drawer" class="fixed top-0 left-0 h-full w-72 bg-white z-50 flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 lg:hidden">
+        <div class="px-5 py-5 border-b border-gray-50 flex items-center justify-between">
+            <div>
+                <div class="flex items-center gap-2.5 mb-0.5">
+                    <div class="bg-blue-600 p-1.5 rounded-xl text-white shadow-sm shadow-blue-200">
+                        <i data-lucide="sword" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-base font-black tracking-tight text-gray-900">ITEMMANIA</span>
+                </div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-9">Partners</p>
+            </div>
+            <button onclick="closeMobileMenu()" class="p-2 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <!-- 유저 정보 -->
+        <div class="px-5 py-4 border-b border-gray-50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-black shadow-sm">M</div>
+                <div>
+                    <p class="text-sm font-bold text-gray-800">plan010</p>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+            <button onclick="switchTab('guide');closeMobileMenu()" class="drawer-item sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="book-open" class="w-4 h-4 flex-shrink-0"></i><span>파트너스 안내</span>
+            </button>
+            <button onclick="switchTab('dashboard');closeMobileMenu()" class="drawer-item sidebar-item active w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 flex-shrink-0"></i><span>대시보드</span>
+            </button>
+            <button onclick="switchTab('media');closeMobileMenu()" class="drawer-item sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="monitor" class="w-4 h-4 flex-shrink-0"></i><span>나의 매체 관리</span>
+            </button>
+            <button onclick="switchTab('campaigns');closeMobileMenu()" class="drawer-item sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0"></i><span>캠페인 탐색</span>
+            </button>
+            <button onclick="switchTab('banners');closeMobileMenu()" class="drawer-item sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="image" class="w-4 h-4 flex-shrink-0"></i><span>승인 및 배너함</span>
+            </button>
+            <button onclick="switchTab('performance');closeMobileMenu()" class="drawer-item sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="bar-chart-2" class="w-4 h-4 flex-shrink-0"></i><span>성과 리포트</span>
+            </button>
+            <button onclick="switchTab('payouts');closeMobileMenu()" class="drawer-item sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 text-sm">
+                <i data-lucide="wallet" class="w-4 h-4 flex-shrink-0"></i><span>포인트 내역</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-14 bg-white border-b border-gray-100 px-4 lg:px-8 flex items-center justify-between flex-shrink-0 z-30">
+            <div class="flex items-center gap-3">
+                <!-- 모바일 햄버거 -->
+                <button onclick="openMobileMenu()" class="lg:hidden p-2 -ml-1 text-gray-500 hover:text-gray-800">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <!-- 모바일 로고 -->
+                <div class="flex items-center gap-2 lg:hidden">
+                    <div class="bg-blue-600 p-1 rounded-lg text-white">
+                        <i data-lucide="sword" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <span class="text-sm font-black tracking-tight text-gray-900">ITEMMANIA</span>
+                </div>
+                <!-- 데스크탑 타이틀 -->
+                <h2 id="header-title" class="hidden lg:block text-sm font-bold text-gray-800">대시보드</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="hidden md:flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-green-700">정상 운영 중</span>
+                </div>
+                <button class="relative p-2 text-gray-400 hover:text-gray-600">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                </button>
+                <button class="p-2 text-gray-400 hover:text-gray-600">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Scroll — 모바일은 하단 탭바 높이만큼 padding -->
+        <div class="flex-1 overflow-y-auto">
+            <div id="main-content" class="p-4 lg:p-8 pb-24 lg:pb-8 max-w-[1300px] mx-auto w-full space-y-0">
+
+                <!-- ── TAB: 파트너스 안내 ── -->
+                <div id="tab-guide" class="tab-content space-y-8">
+
+                    <!-- 히어로 배너 -->
+                    <div class="rounded-2xl overflow-hidden relative" style="background: linear-gradient(135deg, #111827 0%, #1f2937 55%, #1e3a5f 100%);">
+                        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 75% 50%, #3b82f6 0%, transparent 55%);"></div>
+                        <div class="relative px-8 py-10 max-w-2xl">
+                            <span class="inline-block text-[10px] font-black text-blue-400 uppercase tracking-widest bg-blue-900/40 px-3 py-1 rounded-full mb-4">ITEMMANIA PARTNERS</span>
+                            <h2 class="text-2xl font-black text-white leading-tight mb-3">아이템매니아 광고 파트너스<br>신청부터 정산까지</h2>
+                            <p class="text-sm text-gray-400 leading-relaxed">나의 블로그·유튜브·웹사이트에 아이템매니아 배너를 게시하고,<br class="hidden md:block"> 발생한 성과에 따라 수익을 받는 제휴 광고 프로그램입니다.</p>
+                            <button onclick="switchTab('media')" class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-colors">
+                                <i data-lucide="play" class="w-3.5 h-3.5"></i>지금 시작하기
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 운영 프로세스 스텝 -->
+                    <div>
+                        <h3 class="text-base font-black text-gray-900 mb-5">📋 운영 프로세스</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                            <!-- STEP 1 -->
+                            <div class="card p-6 relative overflow-hidden">
+                                <div class="absolute top-4 right-4 text-5xl font-black text-gray-100 leading-none select-none">01</div>
+                                <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
+                                    <i data-lucide="monitor-plus" class="w-5 h-5 text-blue-500"></i>
+                                </div>
+                                <h4 class="font-black text-sm text-gray-900 mb-1.5">매체 등록</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">홍보할 블로그·유튜브·웹사이트를 등록합니다. 매체 URL과 방문자 정보를 입력하면 신청이 완료됩니다.</p>
+                                <div class="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-blue-500">
+                                    <i data-lucide="clock" class="w-3 h-3"></i>처리 기간: 1~3 영업일
+                                </div>
+                            </div>
+
+                            <!-- STEP 2 -->
+                            <div class="card p-6 relative overflow-hidden">
+                                <div class="absolute top-4 right-4 text-5xl font-black text-gray-100 leading-none select-none">02</div>
+                                <div class="w-10 h-10 bg-purple-50 rounded-2xl flex items-center justify-center mb-4">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-purple-500"></i>
+                                </div>
+                                <h4 class="font-black text-sm text-gray-900 mb-1.5">매체 승인</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">광고주가 등록된 매체를 검토하고 승인합니다. 승인 완료 시 이메일로 안내되며, 이후 캠페인 신청이 가능해집니다.</p>
+                                <div class="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-purple-500">
+                                    <i data-lucide="check-circle" class="w-3 h-3"></i>승인 완료 후 다음 단계 진행
+                                </div>
+                            </div>
+
+                            <!-- STEP 3 -->
+                            <div class="card p-6 relative overflow-hidden">
+                                <div class="absolute top-4 right-4 text-5xl font-black text-gray-100 leading-none select-none">03</div>
+                                <div class="w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center mb-4">
+                                    <i data-lucide="megaphone" class="w-5 h-5 text-orange-500"></i>
+                                </div>
+                                <h4 class="font-black text-sm text-gray-900 mb-1.5">캠페인 신청</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">캠페인 탐색에서 원하는 광고를 선택해 참여를 신청합니다. 광고주의 개별 승인 후 배너 소재가 발급됩니다.</p>
+                                <div class="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-orange-500">
+                                    <i data-lucide="clock" class="w-3 h-3"></i>처리 기간: 1~5 영업일
+                                </div>
+                            </div>
+
+                            <!-- STEP 4 -->
+                            <div class="card p-6 relative overflow-hidden">
+                                <div class="absolute top-4 right-4 text-5xl font-black text-gray-100 leading-none select-none">04</div>
+                                <div class="w-10 h-10 bg-green-50 rounded-2xl flex items-center justify-center mb-4">
+                                    <i data-lucide="image" class="w-5 h-5 text-green-500"></i>
+                                </div>
+                                <h4 class="font-black text-sm text-gray-900 mb-1.5">배너 게시</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">승인 및 배너함에서 트래킹 링크 코드를 복사해 나의 매체에 배너를 삽입합니다. 고유 트래킹 ID로 성과가 자동 집계됩니다.</p>
+                                <div class="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-green-500">
+                                    <i data-lucide="link" class="w-3 h-3"></i>트래킹 코드 발급 즉시 게시 가능
+                                </div>
+                            </div>
+
+                            <!-- STEP 5 -->
+                            <div class="card p-6 relative overflow-hidden">
+                                <div class="absolute top-4 right-4 text-5xl font-black text-gray-100 leading-none select-none">05</div>
+                                <div class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center mb-4">
+                                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-500"></i>
+                                </div>
+                                <h4 class="font-black text-sm text-gray-900 mb-1.5">성과 추적</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">배너를 통한 클릭·가입·로그인·구매·판매 등 모든 이벤트가 실시간으로 기록됩니다. 성과 리포트에서 상세 내역을 확인할 수 있습니다.</p>
+                                <div class="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-indigo-500">
+                                    <i data-lucide="activity" class="w-3 h-3"></i>클릭·가입·구매·판매 전 이벤트 추적
+                                </div>
+                            </div>
+
+                            <!-- STEP 6 -->
+                            <div class="card p-6 relative overflow-hidden">
+                                <div class="absolute top-4 right-4 text-5xl font-black text-gray-100 leading-none select-none">06</div>
+                                <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
+                                    <i data-lucide="wallet" class="w-5 h-5 text-blue-500"></i>
+                                </div>
+                                <h4 class="font-black text-sm text-gray-900 mb-1.5">포인트 정산</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">캠페인별로 적립된 수익 포인트는 포인트 내역에서 확인할 수 있습니다. 1만 P 이상부터 환전 신청이 가능하며, 5만 P 초과 시 신분증 사본이 필요합니다. 관리자 검토 후 지급됩니다.</p>
+                                <div class="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-blue-500">
+                                    <i data-lucide="calendar" class="w-3 h-3"></i>매월 말일 정산 기준 / 익월 지급
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 커미션 구조 안내 -->
+                    <div>
+                        <h3 class="text-base font-black text-gray-900 mb-5">💰 커미션 구조</h3>
+                        <div class="card overflow-hidden">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-100">
+                                        <th class="px-6 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">이벤트 유형</th>
+                                        <th class="px-6 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">설명</th>
+                                        <th class="px-6 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">커미션 방식</th>
+                                        <th class="px-6 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">예시 수익</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-50 hover:bg-gray-50/50">
+                                        <td class="px-6 py-4"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-400"></span><span class="font-bold text-gray-800">클릭</span></span></td>
+                                        <td class="px-6 py-4 text-gray-500">배너 클릭 발생 시</td>
+                                        <td class="px-6 py-4 text-center"><span class="status-badge s-waiting">CPC</span></td>
+                                        <td class="px-6 py-4 text-right font-bold text-gray-700">클릭당 20~50 P</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-50 hover:bg-gray-50/50">
+                                        <td class="px-6 py-4"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-400"></span><span class="font-bold text-gray-800">가입</span></span></td>
+                                        <td class="px-6 py-4 text-gray-500">신규 회원 가입 완료 시</td>
+                                        <td class="px-6 py-4 text-center"><span class="status-badge s-pending">CPA</span></td>
+                                        <td class="px-6 py-4 text-right font-bold text-gray-700">건당 500~2,000 P</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-50 hover:bg-gray-50/50">
+                                        <td class="px-6 py-4"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-400"></span><span class="font-bold text-gray-800">구매</span></span></td>
+                                        <td class="px-6 py-4 text-gray-500">아이템 구매 완료 시</td>
+                                        <td class="px-6 py-4 text-center"><span class="status-badge s-approved">정액/정률</span></td>
+                                        <td class="px-6 py-4 text-right font-bold text-blue-600">거래액의 1.5~3.0%</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50/50">
+                                        <td class="px-6 py-4"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-400"></span><span class="font-bold text-gray-800">판매</span></span></td>
+                                        <td class="px-6 py-4 text-gray-500">아이템 판매 완료 시</td>
+                                        <td class="px-6 py-4 text-center"><span class="status-badge s-approved">정액/정률</span></td>
+                                        <td class="px-6 py-4 text-right font-bold text-blue-600">거래액의 1.5~3.0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- FAQ -->
+                    <div>
+                        <h3 class="text-base font-black text-gray-900 mb-5">❓ 자주 묻는 질문</h3>
+                        <div class="space-y-3">
+                            <div class="card p-5">
+                                <p class="text-sm font-bold text-gray-800 mb-1.5">Q. 매체는 몇 개까지 등록할 수 있나요?</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">최대 10개까지 등록 가능합니다. 각 매체는 광고주의 개별 심사를 거쳐 승인됩니다.</p>
+                            </div>
+                            <div class="card p-5">
+                                <p class="text-sm font-bold text-gray-800 mb-1.5">Q. 신분증 제출은 꼭 해야 하나요?</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">환전 신청 금액이 5만 P를 초과하는 경우에만 소득세 신고를 위해 신분증 사본이 필요합니다. 주민등록번호 뒷자리는 반드시 마스킹 처리 후 제출해 주세요.</p>
+                            </div>
+                            <div class="card p-5">
+                                <p class="text-sm font-bold text-gray-800 mb-1.5">Q. 트래킹 링크는 어떻게 동작하나요?</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">배너에 삽입된 고유 트래킹 URL에는 캠페인 ID와 파트너 ID가 포함되어 있습니다. 이용자가 배너를 통해 유입되면 클릭·가입·구매 등 모든 이벤트가 파트너 계정에 자동으로 귀속됩니다. 쿠키 유효 기간은 24시간입니다.</p>
+                            </div>
+                            <div class="card p-5">
+                                <p class="text-sm font-bold text-gray-800 mb-1.5">Q. 포인트 환전은 어떻게 하나요?</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">포인트 내역 탭에서 [포인트 환전하기] 버튼을 클릭하면 됩니다. 최소 1만 P 이상부터 신청 가능하며, 어뷰징 여부 검토를 포함한 관리자 승인 후 지급됩니다. 5만 P 초과 신청 시 신분증 사본을 첨부해야 합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 바로가기 CTA -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button onclick="switchTab('media')" class="card p-5 text-center hover:shadow-md transition-shadow group">
+                            <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-100 transition-colors">
+                                <i data-lucide="monitor-plus" class="w-5 h-5 text-blue-500"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-800">매체 등록하기</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">STEP 1 시작</p>
+                        </button>
+                        <button onclick="switchTab('campaigns')" class="card p-5 text-center hover:shadow-md transition-shadow group">
+                            <div class="w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-orange-100 transition-colors">
+                                <i data-lucide="megaphone" class="w-5 h-5 text-orange-500"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-800">캠페인 탐색</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">광고 둘러보기</p>
+                        </button>
+                        <button onclick="switchTab('banners')" class="card p-5 text-center hover:shadow-md transition-shadow group">
+                            <div class="w-10 h-10 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-green-100 transition-colors">
+                                <i data-lucide="image" class="w-5 h-5 text-green-500"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-800">배너함 열기</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">소재 다운로드</p>
+                        </button>
+                        <button onclick="switchTab('payouts')" class="card p-5 text-center hover:shadow-md transition-shadow group">
+                            <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-100 transition-colors">
+                                <i data-lucide="wallet" class="w-5 h-5 text-blue-500"></i>
+                            </div>
+                            <p class="text-xs font-bold text-gray-800">포인트 내역</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">수익 포인트 확인</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ── TAB: 대시보드 ── -->
+                <div id="tab-dashboard" class="tab-content active space-y-6">
+
+                    <!-- Welcome Strip -->
+                    <div class="rounded-2xl overflow-hidden relative" style="background: linear-gradient(135deg, #111827 0%, #1f2937 60%, #1e3a5f 100%);">
+                        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 80% 50%, #3b82f6 0%, transparent 60%);"></div>
+                        <div class="relative px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                            <div>
+                                <p class="text-blue-400 text-[11px] font-bold uppercase tracking-widest mb-1">ITEMMANIA PARTNERS</p>
+                                <h3 class="text-xl font-black text-white mb-1">안녕하세요, plan010님 👋</h3>
+                                <p class="text-sm text-gray-400">현재 <span id="dash-active-count" class="text-blue-400 font-bold">-</span>개 캠페인에서 활발히 활동 중입니다.</p>
+                            </div>
+                            <div class="flex items-center gap-6 flex-shrink-0">
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">이번 달 적립 포인트</p>
+                                    <p class="text-2xl font-black text-white"><span id="dash-revenue">-</span> <span class="text-xs font-normal text-gray-400">P</span></p>
+                                </div>
+                                <div class="w-px h-10 bg-white/10"></div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">환전 가능 포인트</p>
+                                    <p class="text-2xl font-black text-blue-400">352,400 <span class="text-xs font-normal text-gray-400">P</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Row -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card p-5 flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="monitor" class="w-5 h-5 text-blue-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">승인 매체</p>
+                                <div class="flex items-baseline gap-1.5 mt-0.5">
+                                    <span class="text-xl font-black text-gray-900">2</span>
+                                    <span class="text-[10px] font-bold text-green-600">+1 신규</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-5 flex items-center gap-4">
+                            <div class="w-10 h-10 bg-purple-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="megaphone" class="w-5 h-5 text-purple-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">참여 캠페인</p>
+                                <div class="flex items-baseline gap-1.5 mt-0.5">
+                                    <span id="dash-camp-count" class="text-xl font-black text-gray-900">-</span>
+                                    <span class="text-[10px] font-bold text-gray-400">/ 6개</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-5 flex items-center gap-4">
+                            <div class="w-10 h-10 bg-green-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="shopping-cart" class="w-5 h-5 text-green-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">구매</p>
+                                <div class="flex items-baseline gap-1.5 mt-0.5">
+                                    <span id="dash-purchase" class="text-xl font-black text-gray-900">-</span>
+                                    <span class="text-[10px] font-bold text-gray-400">건</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-5 flex items-center gap-4">
+                            <div class="w-10 h-10 bg-teal-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="tag" class="w-5 h-5 text-teal-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase">판매</p>
+                                <div class="flex items-baseline gap-1.5 mt-0.5">
+                                    <span id="dash-sell" class="text-xl font-black text-gray-900">-</span>
+                                    <span class="text-[10px] font-bold text-gray-400">건</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notice — 1줄 1항목 세로 리스트 -->
+                    <div class="card p-5">
+                        <h3 class="font-bold text-sm text-gray-800 mb-3">공지 및 가이드</h3>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors cursor-pointer group">
+                                <span class="text-sm leading-none flex-shrink-0">📢</span>
+                                <span class="text-xs font-bold text-gray-800 group-hover:text-blue-700 flex-1 truncate">6월 정산 일정 안내</span>
+                                <span class="text-[10px] text-gray-400 flex-shrink-0">공휴일로 인해 지급일이 변경됩니다.</span>
+                            </div>
+                            <div class="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors cursor-pointer group">
+                                <span class="text-sm leading-none flex-shrink-0">💡</span>
+                                <span class="text-xs font-bold text-gray-800 group-hover:text-blue-700 flex-1 truncate">블로그 유입 2배 늘리기</span>
+                                <span class="text-[10px] text-gray-400 flex-shrink-0">검색 키워드 최적화 방법 안내</span>
+                            </div>
+                            <div class="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-xl hover:bg-green-50 transition-colors cursor-pointer group">
+                                <span class="text-sm leading-none flex-shrink-0">🆕</span>
+                                <span class="text-xs font-bold text-gray-800 group-hover:text-green-700 flex-1 truncate">리니지M 시즌4 캠페인 오픈</span>
+                                <span class="text-[10px] text-gray-400 flex-shrink-0">커미션 최대 3% 특별 혜택 제공</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB: 매체 관리 ── -->
+                <div id="tab-media" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-black text-gray-900">나의 매체 관리</h3>
+                            <p class="text-sm text-gray-400 mt-1">광고주가 승인한 매체에서만 유입이 인정됩니다.</p>
+                        </div>
+                        <button onclick="openMediaModal()" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> 신규 매체 등록
+                        </button>
+                    </div>
+
+                    <div id="media-list" class="space-y-3"></div>
+
+                    <!-- Guide -->
+                    <div class="card p-6 border-l-4 border-l-orange-400">
+                        <div class="flex gap-3">
+                            <i data-lucide="info" class="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-800 mb-1">매체 승인 안내</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">매체 등록 후 광고주가 개별 검토하여 승인합니다. 승인 완료 후 해당 캠페인에 신청 가능하며, 매체별로 트래킹 링크가 별도 발급됩니다. 보통 1~3 영업일 내 처리됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB: 캠페인 탐색 ── -->
+                <div id="tab-campaigns" class="tab-content space-y-6">
+                    <div>
+                        <h3 class="text-xl font-black text-gray-900">캠페인 탐색</h3>
+                        <p class="text-sm text-gray-400 mt-1">참여 신청 후 광고주 승인을 받으면 배너 홍보를 시작할 수 있습니다.</p>
+                    </div>
+                    <!-- Filter -->
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-xl">전체</button>
+                        <button class="px-4 py-2 bg-white text-gray-500 text-xs font-bold rounded-xl border border-gray-200 hover:border-gray-400 transition-colors">MMORPG</button>
+                        <button class="px-4 py-2 bg-white text-gray-500 text-xs font-bold rounded-xl border border-gray-200 hover:border-gray-400 transition-colors">액션RPG</button>
+                        <button class="px-4 py-2 bg-white text-gray-500 text-xs font-bold rounded-xl border border-gray-200 hover:border-gray-400 transition-colors">전략</button>
+                    </div>
+                    <div id="campaign-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+                </div>
+
+                <!-- ── TAB: 승인 및 배너함 ── -->
+                <div id="tab-banners" class="tab-content space-y-5">
+                    <div>
+                        <h3 class="text-xl font-black text-gray-900">승인 및 배너함</h3>
+                        <p class="text-sm text-gray-400 mt-1">승인된 캠페인의 배너 소재와 트래킹 링크를 복사하여 홍보에 사용하세요.</p>
+                    </div>
+                    <div id="banner-list" class="space-y-4"></div>
+                </div>
+
+                <!-- ── TAB: 성과 리포트 ── -->
+                <div id="tab-performance" class="tab-content space-y-5">
+                    <div>
+                        <h3 class="text-xl font-black text-gray-900">성과 리포트</h3>
+                        <p class="text-sm text-gray-400 mt-1">캠페인별 트래킹 이벤트 성과를 확인하세요.</p>
+                    </div>
+
+                    <!-- 요약 지표 카드 -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3" id="perf-summary-cards"></div>
+
+                    <!-- 필터 -->
+                    <div class="card p-4 flex items-center gap-3 flex-wrap">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-gray-500">기간</label>
+                            <select class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none">
+                                <option>최근 7일</option>
+                                <option>최근 30일</option>
+                                <option>이번 달</option>
+                                <option>지난 달</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-gray-500">캠페인</label>
+                            <select id="perf-camp-filter" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 outline-none">
+                                <option value="">전체</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary text-xs px-4 py-2">조회</button>
+
+                    </div>
+
+                    <!-- 성과 테이블 -->
+                    <div class="card overflow-x-auto">
+                        <table class="w-full text-xs whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100">
+                                    <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase sticky left-0 bg-gray-50">날짜</th>
+                                    <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인</th>
+                                    <th class="px-5 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">매체</th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"></span>클릭
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block"></span>가입
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block"></span>로그인
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block"></span>구매건수
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>구매금액 (P)
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>판매건수
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-teal-400 inline-block"></span>판매금액 (P)
+                                        </span>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">
+                                        <span class="flex items-center justify-end gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span>수익 포인트 (P)
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="perf-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ── TAB: 지급 내역 ── -->
+                <div id="tab-payouts" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                            <h3 class="text-xl font-black text-gray-900">포인트 내역</h3>
+                            <p class="text-sm text-gray-400 mt-1">캠페인별로 적립된 포인트를 확인하고 환전 신청할 수 있습니다.</p>
+                        </div>
+                        <button onclick="openConvertModal()" class="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-black rounded-2xl shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5">
+                            <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                            포인트 환전하기
+                        </button>
+                    </div>
+                    <!-- Summary -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="card p-5 text-center">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">총 누적 포인트</p>
+                            <p class="text-xl font-black text-gray-900"><span id="payout-total">-</span> <span class="text-xs text-gray-400">P</span></p>
+                        </div>
+                        <div class="card p-5 text-center border-2 border-blue-100 bg-blue-50/30">
+                            <p class="text-[10px] font-bold text-blue-500 uppercase mb-2">환전 가능 포인트</p>
+                            <p class="text-xl font-black text-blue-700"><span id="payout-available">-</span> <span class="text-xs text-blue-400">P</span></p>
+                        </div>
+                        <div class="card p-5 text-center">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">환전 신청 중</p>
+                            <p class="text-xl font-black text-orange-500"><span id="payout-pending">-</span> <span class="text-xs text-gray-400">P</span></p>
+                        </div>
+                        <div class="card p-5 text-center">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">이번 달 적립</p>
+                            <p class="text-xl font-black text-gray-900"><span id="payout-monthly">-</span> <span class="text-xs text-gray-400">P</span></p>
+                        </div>
+                    </div>
+
+                    <!-- 적립 포인트 내역 -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-black text-sm text-gray-800 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                캠페인별 적립 포인트
+                            </h4>
+                            <span class="text-[10px] font-bold text-gray-400">환전 신청 전 잔여 포인트</span>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-100">
+                                        <th class="px-6 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인</th>
+                                        <th class="px-6 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">캠페인 기간</th>
+                                        <th class="px-6 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">신청 기간</th>
+                                        <th class="px-6 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">적립 포인트</th>
+                                        <th class="px-6 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="points-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 환전 신청 내역 -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-black text-sm text-gray-800 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-orange-400 rounded-full"></span>
+                                환전 신청 내역
+                            </h4>
+                            <span class="text-[10px] font-bold text-gray-400">관리자 승인 후 지급 처리됩니다</span>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-100">
+                                        <th class="px-6 py-3.5 text-left font-bold text-gray-500 text-[11px] uppercase">신청일</th>
+                                        <th class="px-6 py-3.5 text-right font-bold text-gray-500 text-[11px] uppercase">신청 포인트</th>
+                                        <th class="px-6 py-3.5 text-center font-bold text-gray-500 text-[11px] uppercase">상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payout-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 안내 박스 -->
+                    <div class="card p-5 border-l-4 border-l-blue-400 bg-blue-50/30">
+                        <div class="flex gap-3">
+                            <i data-lucide="info" class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5"></i>
+                            <div class="space-y-1">
+                                <h4 class="font-bold text-sm text-gray-800">포인트 환전 안내</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">• 최소 <strong>1만 포인트(P) 이상</strong>부터 환전 신청이 가능합니다.</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">• <strong>5만 P 초과</strong> 환전 신청 시 신분증 사본 첨부가 필요합니다 (뒷자리 마스킹 필수).</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">• 모든 환전 신청은 어뷰징 여부 검토 후 관리자 승인을 거쳐 지급됩니다.</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">• 승인 완료 후 영업일 기준 3~5일 내 지급됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- ① 포인트 환전하기 모달 (상단 버튼용) -->
+<div id="convert-modal" class="fixed inset-0 modal-bg z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[28px] p-8 max-w-md w-full shadow-2xl">
+
+        <!-- 헤더 -->
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="arrow-left-right" class="w-5 h-5 text-blue-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-black text-gray-900">포인트 환전하기</h3>
+                <p class="text-xs text-gray-400">보유 포인트에서 원하는 금액을 환전하세요</p>
+            </div>
+        </div>
+
+        <!-- 안내 노티 -->
+        <div class="space-y-2 mb-5">
+            <div class="flex gap-2 items-start bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-amber-700 font-bold leading-relaxed">포인트 환전은 <strong>매월 1회</strong>만 신청 가능합니다. 신중하게 신청해 주세요.</p>
+            </div>
+            <div class="flex gap-2 items-start bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-blue-700 font-bold leading-relaxed">신청된 포인트는 <strong>매월 15일</strong>에 일괄 지급됩니다.</p>
+            </div>
+        </div>
+
+        <!-- 보유 포인트 표시 -->
+        <div class="bg-gray-50 rounded-2xl px-5 py-4 mb-5 flex items-center justify-between">
+            <span class="text-xs font-bold text-gray-500">환전 가능 포인트</span>
+            <span class="text-xl font-black text-blue-700" id="convert-available-display">-</span>
+        </div>
+
+        <!-- 환전 포인트 입력 -->
+        <div class="mb-5">
+            <label class="text-[11px] font-bold text-gray-500 uppercase mb-1.5 block">환전 신청 포인트 (P)</label>
+            <input id="convert-amount" type="number" placeholder="환전할 포인트 입력"
+                oninput="onConvertAmountInput()"
+                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <p id="convert-amount-hint" class="text-[10px] text-gray-400 mt-1.5 ml-1">최소 10,000 P 이상 입력하세요.</p>
+        </div>
+
+        <!-- 신분증 첨부 (5만 P 초과 시 표시) -->
+        <div id="convert-id-section" class="hidden mb-5">
+            <div class="flex gap-2 items-start bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-orange-500 flex-shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-orange-700 font-bold leading-relaxed">5만 P 초과 환전 시 <strong>신분증 사본</strong> 첨부가 필요합니다.</p>
+            </div>
+            <div onclick="document.getElementById('convert-id-file').click()"
+                id="convert-id-upload-area"
+                class="border-2 border-dashed border-gray-200 rounded-2xl py-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors group mb-2">
+                <div class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                    <i data-lucide="upload-cloud" class="w-5 h-5 text-gray-400"></i>
+                </div>
+                <p class="text-sm font-bold text-gray-600">클릭하여 파일 업로드</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">JPG, PNG, PDF · 최대 5MB</p>
+                <input id="convert-id-file" type="file" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="onConvertIdFileSelected(event)">
+            </div>
+            <p id="convert-id-filename" class="text-[11px] text-center text-green-600 font-bold mb-2 hidden"></p>
+            <div class="flex gap-2 bg-gray-50 rounded-xl px-3 py-2">
+                <i data-lucide="info" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0 mt-0.5"></i>
+                <p class="text-[10px] text-gray-500">주민등록번호 뒷자리는 반드시 마스킹 처리 후 제출해 주세요.</p>
+            </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="flex gap-3">
+            <button onclick="closeModal('convert-modal')" class="btn-ghost flex-1 py-3.5">취소</button>
+            <button onclick="submitConvert()" class="btn-primary flex-1 py-3.5">환전 신청</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="exchange-modal" class="fixed inset-0 modal-bg z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[28px] p-8 max-w-md w-full shadow-2xl">
+
+        <!-- 헤더 -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <i data-lucide="coins" class="w-5 h-5 text-blue-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-black text-gray-900">포인트 신청하기</h3>
+                <p class="text-xs text-gray-400">적립된 포인트 전체를 신청합니다</p>
+            </div>
+        </div>
+
+        <!-- 캠페인 정보 -->
+        <div class="bg-gray-50 rounded-2xl px-5 py-4 mb-5">
+            <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">캠페인</p>
+            <p class="text-sm font-black text-gray-800" id="exchange-item-name">-</p>
+            <p class="text-[11px] text-gray-400 mt-0.5" id="exchange-item-campaign">-</p>
+        </div>
+
+        <!-- 신청 포인트 (읽기 전용) -->
+        <div class="mb-6">
+            <label class="text-[11px] font-bold text-gray-500 uppercase mb-1.5 block">신청 포인트</label>
+            <div class="w-full bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center justify-between">
+                <span class="text-sm font-black text-blue-700" id="exchange-amount-display">-</span>
+                <span class="text-xs font-bold text-blue-400">P</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1.5 ml-1">적립된 포인트 전액이 신청됩니다.</p>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="flex gap-3">
+            <button onclick="closeModal('exchange-modal')" class="btn-ghost flex-1 py-3.5">취소</button>
+            <button onclick="submitExchange()" class="btn-primary flex-1 py-3.5">포인트 지급 신청</button>
+        </div>
+    </div>
+</div>
+
+<!-- 매체 등록 모달 -->
+<div id="media-modal" class="fixed inset-0 modal-bg z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[28px] p-8 max-w-md w-full shadow-2xl">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center"><i data-lucide="monitor-plus" class="w-5 h-5 text-blue-600"></i></div>
+            <div>
+                <h3 class="text-lg font-black text-gray-900">매체 등록 신청</h3>
+                <p class="text-xs text-gray-400">활동하실 플랫폼 정보를 입력해 주세요.</p>
+            </div>
+        </div>
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="text-[11px] font-bold text-gray-500 uppercase mb-1.5 block">매체 구분</label>
+                <select id="media-type" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+                    <option value="naver_blog">네이버 블로그</option>
+                    <option value="youtube">유튜브 채널</option>
+                    <option value="instagram">인스타그램</option>
+                    <option value="website">개인 웹사이트</option>
+                    <option value="other">기타</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[11px] font-bold text-gray-500 uppercase mb-1.5 block">매체명</label>
+                <input id="media-name" type="text" placeholder="예: 게임 매니아 블로그" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+            </div>
+            <div>
+                <label class="text-[11px] font-bold text-gray-500 uppercase mb-1.5 block">매체 URL</label>
+                <input id="media-url" type="text" placeholder="https://blog.naver.com/..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+            </div>
+            <div>
+                <label class="text-[11px] font-bold text-gray-500 uppercase mb-1.5 block">월 평균 방문자 수</label>
+                <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none">
+                    <option>1,000명 미만</option>
+                    <option>1,000~5,000명</option>
+                    <option>5,000~10,000명</option>
+                    <option>10,000명 이상</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeModal('media-modal')" class="btn-ghost flex-1 py-3.5">취소</button>
+            <button onclick="submitMedia()" class="btn-primary flex-1 py-3.5">등록 신청</button>
+        </div>
+    </div>
+</div>
+
+<!-- 캠페인 신청 모달 -->
+<div id="apply-modal" class="fixed inset-0 modal-bg z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[28px] p-8 max-w-md w-full shadow-2xl">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center"><i data-lucide="megaphone" class="w-5 h-5 text-green-600"></i></div>
+            <div>
+                <h3 class="text-lg font-black text-gray-900" id="apply-modal-title">캠페인 참여 신청</h3>
+                <p class="text-xs text-gray-400">홍보할 매체를 선택해 주세요.</p>
+            </div>
+        </div>
+        <div class="space-y-2 mb-6">
+            <div class="p-4 border-2 border-red-500 bg-red-50 rounded-xl flex items-center gap-3 cursor-pointer">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-red-600 flex-shrink-0"></i>
+                <span class="text-sm font-bold text-gray-800">게임 매니아의 성지 (네이버 블로그)</span>
+            </div>
+            <div class="p-4 border-2 border-gray-200 bg-gray-50 rounded-xl flex items-center gap-3 cursor-pointer hover:border-gray-300 transition-colors opacity-60">
+                <i data-lucide="circle" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+                <div>
+                    <span class="text-sm font-bold text-gray-600">매니아TV (유튜브)</span>
+                    <p class="text-[10px] text-orange-500 font-bold">검토 중 - 승인 후 사용 가능</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeModal('apply-modal')" class="btn-ghost flex-1 py-3.5">취소</button>
+            <button onclick="processApply()" class="btn-primary flex-1 py-3.5">신청하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3.5 rounded-2xl text-sm font-bold opacity-0 toast-anim z-50 pointer-events-none shadow-2xl flex items-center gap-2">
+    <i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>
+    <span id="toast-msg">메시지</span>
+</div>
+
+<!-- ═══ 모바일 하단 탭바 ═══ -->
+<nav id="mobile-tabbar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-30 lg:hidden safe-area-bottom">
+    <div class="flex items-stretch h-16">
+        <button onclick="switchTab('dashboard')" data-tab="dashboard" class="tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">홈</span>
+        </button>
+        <button onclick="switchTab('campaigns')" data-tab="campaigns" class="tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400">
+            <i data-lucide="megaphone" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">캠페인</span>
+        </button>
+        <button onclick="switchTab('banners')" data-tab="banners" class="tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400">
+            <i data-lucide="image" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">배너함</span>
+        </button>
+        <button onclick="switchTab('performance')" data-tab="performance" class="tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400">
+            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">성과</span>
+        </button>
+        <button onclick="switchTab('payouts')" data-tab="payouts" class="tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-gray-400">
+            <i data-lucide="wallet" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold">포인트</span>
+        </button>
+    </div>
+</nav>
+
+<script>
+// ═══ DATA ═══
+let MEDIAS = [
+    { id:1, type:'네이버 블로그', name:'게임 매니아의 성지', url:'blog.naver.com/mania_king', status:'APPROVED', icon:'layout' },
+    { id:2, type:'유튜브', name:'매니아TV', url:'youtube.com/c/maniatv', status:'PENDING', icon:'youtube' }
+];
+
+let CAMPAIGNS = [
+    { id:1, name:'리니지M 신규서버 구매 프로모션', brand:'', status:'READY', category:'MMORPG',
+      totalPoints:10000000, dailyPoints:500000, remainPoints:3820000,
+      commission:'구매 2.5% / 건',
+      commissionDetail: [ {type:'구매', val:'2.5% / 건'} ],
+      image:'https://play-lh.googleusercontent.com/0s-wnTLw-p6tp0YZnH3nqbIZ2LH9pUNMLWoeONE2YNb4LnTbO4lrOslia7lXGJH9xiCjZcyBBDSE-Z0t_dt3HeI=w526-h296' },
+    { id:2, name:'메이플스토리 신규서버 판매 프로모션', brand:'', status:'APPROVED', category:'MMORPG',
+      totalPoints:5000000, dailyPoints:200000, remainPoints:142000,
+      commission:'판매 1.0% / 건',
+      commissionDetail: [ {type:'판매', val:'1.0% / 건'} ],
+      image:'https://play-lh.googleusercontent.com/RO390bUd8nMMxhnHaqThjZE3A1smHol0RlMjvFi-BjZ_0MnkIUSYXidsBGg7ag1cjD3oFJl_9OOHV8rACbdr=w526-h296' },
+    { id:3, name:'신규가입 프로모션', brand:'', status:'APPROVED', category:'액션RPG',
+      totalPoints:2000000, dailyPoints:100000, remainPoints:0,
+      commission:'가입 300 P / 건',
+      commissionDetail: [ {type:'가입', val:'300 P / 건'} ],
+      image:'https://bnetcmsus-a.akamaihd.net/cms/blog_thumbnail/5o/5OVO1XPKZ6821716000504595.jpg' },
+    { id:4, name:'리니지클래식 구매 프로모션', brand:'', status:'APPROVED', category:'MMORPG',
+      totalPoints:7000000, dailyPoints:300000, remainPoints:2150000,
+      commission:'구매 2.0% / 건',
+      commissionDetail: [ {type:'구매', val:'2.0% / 건'} ],
+      image:'https://play-lh.googleusercontent.com/uGJ2aIIP2h4NhVCLZRbW7DaxgNUD_9aZGieb7j1fp2ndwRzNjxFWsUfTDT6rEXzbfPMXibmpqNejF4N8YjRA4Q=w526-h296' },
+    { id:5, name:'로스트아크 판매 프로모션', brand:'', status:'READY', category:'액션RPG',
+      totalPoints:3000000, dailyPoints:150000, remainPoints:980000,
+      commission:'판매 1.5% / 건',
+      commissionDetail: [ {type:'판매', val:'1.5% / 건'} ],
+      image:'https://cdn.cloudflare.steamstatic.com/steam/apps/1599340/header.jpg' },
+    { id:6, name:'홈페이지 홍보 프로모션', brand:'', status:'CLOSED', category:'MMORPG',
+      totalPoints:500000, dailyPoints:50000, remainPoints:500000,
+      commission:'클릭 2 P / 건',
+      commissionDetail: [ {type:'클릭', val:'2 P / 건'} ],
+      image:'https://play-lh.googleusercontent.com/nFOTEY0CN6jeE1nFJMCj8bzZveP2RYFxr05uJ6b9xcCFIAa6qFp2PEUfQD7IBswtCA=w526-h296' },
+];
+
+// 적립 포인트 내역 (캠페인별, 환전 신청 전 상태)
+let POINTS = [
+    { id:1, item:'리니지M 신규서버 구매 프로모션',     campaign:'리니지M 신규서버 구매 프로모션',     period:'2026.02.07~03.08', applyDeadline:'2026.04.30', rawAmount:85000,  status:'APPLY' },
+    { id:2, item:'메이플스토리 신규서버 판매 프로모션', campaign:'메이플스토리 신규서버 판매 프로모션', period:'2026.02.10~03.10', applyDeadline:'2026.04.30', rawAmount:30000,  status:'COMPLETED' },
+    { id:3, item:'신규가입 프로모션',                  campaign:'신규가입 프로모션',                 period:'2026.02.14~03.14', applyDeadline:'2026.04.30', rawAmount:8500,   status:'PENDING_APPROVAL' },
+    { id:4, item:'리니지클래식 구매 프로모션',          campaign:'리니지클래식 구매 프로모션',         period:'2026.02.01~03.01', applyDeadline:'2026.04.30', rawAmount:124000, status:'APPLY' },
+    { id:5, item:'로스트아크 판매 프로모션',            campaign:'로스트아크 판매 프로모션',           period:'2026.02.18~03.18', applyDeadline:'2026.04.30', rawAmount:15000,  status:'APPLY' },
+];
+
+// 환전 신청 내역 (신청 후 관리자 검토)
+let PAYOUTS = [
+    { id:1, date:'2026.03.22', item:'메이플스토리 신규서버 판매 프로모션', campaign:'메이플스토리 신규서버 판매 프로모션', amount:'30,000 P', rawAmount:30000, status:'COMPLETED' },
+    { id:2, date:'2026.03.10', item:'리니지클래식 구매 프로모션',          campaign:'리니지클래식 구매 프로모션',         amount:'124,000 P', rawAmount:124000, status:'PENDING_APPROVAL' },
+    { id:3, date:'2026.02.28', item:'신규가입 프로모션',                  campaign:'신규가입 프로모션',                 amount:'8,500 P', rawAmount:8500, status:'APPLY' },
+];
+
+const PERF_DATA = [
+    { date:'05.20', clicks:42, imp:1200, conv:2, earn:60000 },
+    { date:'05.21', clicks:65, imp:1800, conv:3, earn:90000 },
+    { date:'05.22', clicks:58, imp:1600, conv:2, earn:60000 },
+    { date:'05.23', clicks:81, imp:2100, conv:5, earn:150000 },
+    { date:'05.24', clicks:73, imp:2000, conv:4, earn:120000 },
+    { date:'05.25', clicks:96, imp:2500, conv:6, earn:180000 },
+    { date:'Today', clicks:121, imp:3200, conv:8, earn:240000 },
+];
+
+// 게임별 폴백 그라디언트 (이미지 로드 실패 시)
+const GAME_FALLBACK = {
+    1: 'linear-gradient(135deg,#1a0a2e,#4a0e8f)',  // 리니지M 신규서버 구매 프로모션
+    2: 'linear-gradient(135deg,#0d3b1e,#1a7a3c)',  // 메이플스토리 신규서버 판매 프로모션
+    3: 'linear-gradient(135deg,#1a0000,#8b0000)',  // 신규가입 프로모션
+    4: 'linear-gradient(135deg,#0a1628,#1e3a5f)',  // 리니지클래식 구매 프로모션
+    5: 'linear-gradient(135deg,#1a1200,#6b4c00)',  // 로스트아크 판매 프로모션
+    6: 'linear-gradient(135deg,#001a2e,#003d6b)',  // 홈페이지 홍보 프로모션
+};
+function imgFallback(el, id) {
+    el.style.display = 'none';
+    el.parentElement.style.background = GAME_FALLBACK[id] || '#1a1a2e';
+}
+
+// ═══ 공유 성과 데이터 — 성과 리포트·대시보드 모두 이 데이터 기준 ═══
+function buildPerfData() {
+    return CAMPAIGNS.map((c, i) => {
+        const base      = [96, 73, 81, 65, 121, 54][i] || 40;
+        const unitPrice = c.commission.startsWith('₩') ? parseInt(c.commission.replace(/[₩,]/g,'')) : 25000;
+        const purchase  = Math.round(base * 0.09);
+        const sell      = Math.round(base * 0.07);
+        return {
+            id:       c.id,
+            date:     ['2026.03.25','2026.03.25','2026.03.24','2026.03.24','2026.03.23','2026.03.22'][i] || '2026.03.22',
+            camp:     c.name,
+            brand:    '',
+            media:    '게임 매니아의 성지',
+            status:   c.status,
+            click:    base,
+            join:     Math.round(base * 0.38),
+            login:    Math.round(base * 0.61),
+            purchase,
+            buyAmt:   purchase * unitPrice,
+            sell,
+            sellAmt:  sell * unitPrice,
+            revenue:  Math.round((purchase + sell) * unitPrice * 0.025),
+        };
+    });
+}
+function openMobileMenu() {
+    document.getElementById('mobile-drawer').classList.add('open');
+    document.getElementById('mobile-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+    document.getElementById('mobile-drawer').classList.remove('open');
+    document.getElementById('mobile-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// ═══ NAV ═══
+function switchTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('active'); el.style.display='none'; });
+    const tab = document.getElementById(`tab-${name}`);
+    if (tab) { tab.classList.add('active'); tab.style.display='block'; }
+
+    // 사이드바 (데스크탑)
+    document.querySelectorAll('.sidebar-item').forEach(btn => {
+        btn.classList.toggle('active', (btn.getAttribute('onclick')||'').includes(`'${name}'`));
+    });
+    // 드로어 아이템 (모바일)
+    document.querySelectorAll('.drawer-item').forEach(btn => {
+        btn.classList.toggle('active', (btn.getAttribute('onclick')||'').includes(`'${name}'`));
+    });
+    // 하단 탭바
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === name);
+    });
+
+    const titles = { guide:'파트너스 안내', dashboard:'대시보드', media:'나의 매체 관리', campaigns:'캠페인 탐색', banners:'승인 및 배너함', performance:'성과 리포트', payouts:'포인트 내역' };
+    document.getElementById('header-title').innerText = titles[name] || '파트너스';
+    render();
+}
+
+// ═══ RENDER ═══
+function render() {
+    renderChart();
+    renderMedia();
+    renderCampaigns();
+    renderBanners();
+    renderPerfTable();
+    renderPoints();
+    renderPayouts();
+    setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
+}
+
+function renderChart() {
+    // 대시보드 성과 차트 제거됨 - 대신 활성 캠페인 목록 렌더링
+    renderDashActiveCamps();
+}
+
+function renderDashboard() {
+    const pd = buildPerfData();
+    const approved = pd.filter(r => r.status === 'APPROVED');
+    const totalClick   = pd.reduce((s, r) => s + r.click,   0);
+    const totalRevenue = pd.reduce((s, r) => s + r.revenue, 0);
+    const totalPurchase= pd.reduce((s, r) => s + r.purchase,0);
+    const totalSell    = pd.reduce((s, r) => s + r.sell,    0);
+    const approvedCount= CAMPAIGNS.filter(c => c.status === 'APPROVED').length;
+
+    // 웰컴 배너 수치
+    const elRevenue = document.getElementById('dash-revenue');
+    const elActive  = document.getElementById('dash-active-count');
+    if (elRevenue) elRevenue.textContent = totalRevenue.toLocaleString();
+    if (elActive)  elActive.textContent  = approvedCount;
+
+    // 상태 카드 수치
+    const elClick    = document.getElementById('dash-click');
+    const elPurchase = document.getElementById('dash-purchase');
+    const elSell     = document.getElementById('dash-sell');
+    const elCamp     = document.getElementById('dash-camp-count');
+    if (elClick)    elClick.textContent    = totalClick.toLocaleString();
+    if (elPurchase) elPurchase.textContent = totalPurchase.toLocaleString();
+    if (elSell)     elSell.textContent     = totalSell.toLocaleString();
+    if (elCamp)     elCamp.textContent     = approvedCount;
+
+}
+
+function renderDashActiveCamps() { renderDashboard(); }
+
+function renderMedia() {
+    const el = document.getElementById('media-list');
+    if (!el) return;
+    el.innerHTML = MEDIAS.map(m => `
+        <div class="card p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-11 h-11 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
+                    <i data-lucide="${m.icon}" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <h4 class="font-bold text-sm text-gray-800">${m.name}</h4>
+                        <span class="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">${m.type}</span>
+                    </div>
+                    <p class="text-xs text-gray-400">${m.url}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="status-badge ${m.status==='APPROVED'?'s-approved':'s-pending'}">${m.status==='APPROVED'?'승인 완료':'검토 중'}</span>
+                <button class="p-1.5 text-gray-300 hover:text-gray-500 transition-colors"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderCampaigns() {
+    const el = document.getElementById('campaign-list');
+    if (!el) return;
+    el.innerHTML = CAMPAIGNS.map(c => {
+        const isApproved  = c.status === 'APPROVED';
+        const isPending   = c.status === 'PENDING';
+        const isClosed    = c.status === 'CLOSED';
+        const isReady     = c.status === 'READY';
+        const isExhausted = c.remainPoints === 0 && !isClosed;
+        const isDimmed    = isExhausted || isClosed;
+
+        const usedPct = isClosed ? 100 : Math.round((1 - c.remainPoints / c.totalPoints) * 100);
+        const barColor = isClosed ? 'bg-gray-300' : isExhausted ? 'bg-gray-300' : usedPct >= 80 ? 'bg-red-400' : 'bg-blue-500';
+
+        const commRows = c.commissionDetail.map(d => `
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] text-gray-400 font-medium">${d.type}</span>
+                <span class="text-[10px] font-black text-red-600">${d.val}</span>
+            </div>`).join('');
+
+        // 이미지 오버레이 레이블
+        let overlayHtml = '';
+        if (isClosed)    overlayHtml = '<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><span class="text-[11px] font-black text-white bg-black/60 px-3 py-1.5 rounded-full">종료된 캠페인</span></div>';
+        else if (isExhausted) overlayHtml = '<div class="absolute inset-0 bg-black/40 flex items-center justify-center"><span class="text-[11px] font-black text-white bg-black/60 px-3 py-1.5 rounded-full">소진 완료</span></div>';
+        else if (isApproved)  overlayHtml = '<div class="absolute top-3 right-3"><span class="text-[10px] font-bold bg-green-500 text-white px-2.5 py-1 rounded-full">참여 중</span></div>';
+
+        // 하단 버튼
+        let btnClass, btnLabel, btnOnclick;
+        if (isClosed)        { btnClass = 'bg-gray-100 text-gray-400 cursor-default'; btnLabel = '종료'; btnOnclick = ''; }
+        else if (isExhausted){ btnClass = 'bg-gray-100 text-gray-400 cursor-default'; btnLabel = '포인트 소진'; btnOnclick = ''; }
+        else if (isApproved) { btnClass = 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100'; btnLabel = '배너 보기'; btnOnclick = "switchTab('banners')"; }
+        else if (isPending)  { btnClass = 'bg-gray-100 text-gray-400 cursor-default'; btnLabel = '승인 대기 중'; btnOnclick = ''; }
+        else if (isReady)    { btnClass = 'bg-gray-900 text-white hover:bg-gray-700'; btnLabel = '참여 신청'; btnOnclick = `openApplyModal(${c.id})`; }
+        else                 { btnClass = 'bg-gray-900 text-white hover:bg-gray-700'; btnLabel = '참여 신청'; btnOnclick = `openApplyModal(${c.id})`; }
+
+        // 잔여 포인트 표시
+        let remainLabel, remainClass;
+        if (isClosed)        { remainLabel = '종료'; remainClass = 'text-gray-400'; }
+        else if (isExhausted){ remainLabel = '소진'; remainClass = 'text-gray-400'; }
+        else                 { remainLabel = c.remainPoints.toLocaleString() + ' P'; remainClass = 'text-blue-600'; }
+
+        return `
+        <div class="card campaign-card overflow-hidden ${isDimmed ? 'opacity-60' : ''}">
+            <div class="h-36 overflow-hidden relative">
+                <img src="${c.image}" class="w-full h-full object-cover" onerror="imgFallback(this,${c.id})">
+                <div class="absolute top-3 left-3">
+                    <span class="text-[10px] font-bold bg-black/60 text-white px-2.5 py-1 rounded-full backdrop-blur-sm">${c.category}</span>
+                </div>
+                ${overlayHtml}
+            </div>
+            <div class="p-5">
+                <h4 class="font-bold text-sm text-gray-800 leading-snug line-clamp-2 mb-3">${c.name}</h4>
+
+                <!-- 포인트 풀 -->
+                <div class="mb-3">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">잔여 포인트</span>
+                        <span class="text-[11px] font-black ${remainClass}">${remainLabel}</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full ${barColor} rounded-full transition-all" style="width:${usedPct}%"></div>
+                    </div>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-[9px] text-gray-300">총 ${c.totalPoints.toLocaleString()} P</span>
+                        <span class="text-[9px] text-gray-300">일 한도 ${c.dailyPoints.toLocaleString()} P</span>
+                    </div>
+                </div>
+
+                <!-- 성과별 커미션 -->
+                <div class="bg-gray-50 rounded-xl px-3 py-2.5 space-y-1.5 mb-4">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1.5">성과별 커미션</p>
+                    ${commRows}
+                </div>
+
+                <button onclick="${btnOnclick}"
+                    class="w-full py-2.5 text-xs font-bold rounded-xl transition-all ${btnClass}">
+                    ${btnLabel}
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderBanners() {
+    const el = document.getElementById('banner-list');
+    if (!el) return;
+    const approved = CAMPAIGNS.filter(c => c.status === 'APPROVED');
+    if (!approved.length) {
+        el.innerHTML = `<div class="card p-12 text-center text-gray-400">
+            <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-3 text-gray-300"></i>
+            <p class="font-bold text-sm">승인된 캠페인이 없습니다.</p>
+            <p class="text-xs mt-1">캠페인 탐색에서 참여 신청해 주세요.</p>
+        </div>`;
+        return;
+    }
+    // 전체 코드를 전역 배열에 저장해 onclick 내 따옴표 충돌 방지
+    window._bannerCodes = window._bannerCodes || {};
+
+    el.innerHTML = approved.map(c => {
+        const mediaTypeMap = { '네이버 블로그':'blog', '유튜브':'youtube', '웹사이트':'web', '인스타그램':'insta', '트위터':'twitter' };
+        const approvedMedia = MEDIAS.find(m => m.status === 'APPROVED');
+        const mediaCode = approvedMedia ? (mediaTypeMap[approvedMedia.type] || 'media') : 'media';
+        const memberId = '00001';
+        const trackId  = `TRK_${mediaCode}_camp${c.id}_${memberId}`;
+        const trackUrl = `https://mania.partners/tr?cid=${c.id}&pid=plan010`;
+        const imgUrl   = c.image;
+        // HTML 코드를 전역에 보관 — onclick 에서 문자열 직접 삽입 안 함
+        window._bannerCodes[c.id] = `<a href="${trackUrl}"><img src="${imgUrl}" /></a>`;
+        return `
+        <div class="card overflow-hidden">
+            <!-- Header -->
+            <div class="px-4 py-2.5 border-b border-gray-50 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
+                    <img src="${c.image}" class="w-full h-full object-cover" onerror="imgFallback(this,${c.id})">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-xs text-gray-900 truncate">${c.name}</h4>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold text-green-600 flex items-center gap-1">
+                            <i data-lucide="check-circle" class="w-3 h-3"></i>네이버 블로그 승인
+                        </span>
+                        <span class="text-gray-200">·</span>
+                        <span class="text-[10px] font-bold text-gray-400">커미션 <span class="text-red-500">${c.commission}</span></span>
+                    </div>
+                </div>
+                <span class="flex-shrink-0 bg-gray-50 border border-gray-200 text-gray-400 text-[10px] font-bold px-2.5 py-1 rounded-lg font-mono">${trackId}</span>
+            </div>
+
+            <!-- Body: 이미지 + 버튼 -->
+            <div class="p-3 flex flex-col sm:flex-row gap-3">
+
+                <!-- 배너 이미지 (70%) -->
+                <div style="flex: 0 0 70%;" class="min-w-0">
+                    <div class="relative rounded-lg overflow-hidden bg-gray-50 border border-gray-100" style="aspect-ratio:32/9;">
+                        <img src="${c.image}" class="w-full h-full object-cover" onerror="imgFallback(this,${c.id})">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                        <span class="absolute bottom-1.5 left-2 bg-green-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full">LIVE</span>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼 3개 (30%) -->
+                <div style="flex: 1;" class="flex flex-col justify-center gap-1.5">
+                    <!-- 1. 이미지 다운로드 -->
+                    <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                        <i data-lucide="image" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0"></i>
+                        <p class="text-[11px] font-bold text-gray-700 flex-1">이미지 다운로드</p>
+                        <a href="${imgUrl}" download class="px-2.5 py-1 bg-gray-900 hover:bg-gray-700 text-white text-[10px] font-bold rounded-md transition-colors flex-shrink-0">
+                            다운로드
+                        </a>
+                    </div>
+
+                    <!-- 2. 전체 코드 복사 -->
+                    <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                        <i data-lucide="code-2" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0"></i>
+                        <p class="text-[11px] font-bold text-gray-700 flex-1">전체 코드 복사</p>
+                        <button onclick="copyToClipboard(window._bannerCodes[${c.id}])" class="px-2.5 py-1 bg-gray-900 hover:bg-gray-700 text-white text-[10px] font-bold rounded-md transition-colors flex-shrink-0">
+                            복사
+                        </button>
+                    </div>
+
+                    <!-- 3. 트래킹 URL만 복사 -->
+                    <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                        <i data-lucide="link-2" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0"></i>
+                        <p class="text-[11px] font-bold text-gray-700 flex-1">트래킹 URL만 복사</p>
+                        <button onclick="copyToClipboard('${trackUrl}')" class="px-2.5 py-1 bg-gray-900 hover:bg-gray-700 text-white text-[10px] font-bold rounded-md transition-colors flex-shrink-0">
+                            복사
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderPerfTable() {
+    const tbody = document.getElementById('perf-table-body');
+    const cards = document.getElementById('perf-summary-cards');
+    if (!tbody) return;
+
+    // 공유 성과 데이터 사용 (대시보드와 동일한 소스)
+    const perfData = buildPerfData();
+
+    // 요약 합계
+    const total = perfData.reduce((acc, r) => ({
+        click:    acc.click    + r.click,
+        join:     acc.join     + r.join,
+        login:    acc.login    + r.login,
+        purchase: acc.purchase + r.purchase,
+        buyAmt:   acc.buyAmt   + r.buyAmt,
+        sell:     acc.sell     + r.sell,
+        sellAmt:  acc.sellAmt  + r.sellAmt,
+        revenue:  acc.revenue  + r.revenue,
+    }), { click:0, join:0, login:0, purchase:0, buyAmt:0, sell:0, sellAmt:0, revenue:0 });
+
+    // 요약 카드
+    const summaryItems = [
+        { label:'클릭',       value: total.click.toLocaleString(),    dot:'bg-blue-400',   val:'text-blue-600' },
+        { label:'가입',       value: total.join.toLocaleString(),     dot:'bg-purple-400', val:'text-purple-600' },
+        { label:'로그인',     value: total.login.toLocaleString(),    dot:'bg-indigo-400', val:'text-indigo-600' },
+        { label:'구매건수',   value: total.purchase.toLocaleString(), dot:'bg-orange-400', val:'text-orange-600' },
+        { label:'구매금액(P)',value: total.buyAmt.toLocaleString(),   dot:'bg-amber-400',  val:'text-amber-600' },
+        { label:'판매건수',   value: total.sell.toLocaleString(),     dot:'bg-green-400',  val:'text-green-600' },
+        { label:'판매금액(P)',value: total.sellAmt.toLocaleString(),  dot:'bg-teal-400',   val:'text-teal-600' },
+        { label:'수익 포인트(P)', value: total.revenue.toLocaleString(),  dot:'bg-red-400',    val:'text-red-600' },
+    ];
+    if (cards) {
+        cards.innerHTML = summaryItems.map(s => `
+            <div class="card p-4">
+                <div class="flex items-center gap-1.5 mb-2">
+                    <span class="w-2 h-2 rounded-full ${s.dot}"></span>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">${s.label}</p>
+                </div>
+                <p class="text-lg font-black ${s.val}">${s.value}</p>
+            </div>
+        `).join('');
+    }
+
+    // 테이블 행
+    tbody.innerHTML = perfData.map(r => `
+        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-xs">
+            <td class="px-5 py-4 text-gray-400 font-medium sticky left-0 bg-white">${r.date}</td>
+            <td class="px-5 py-4 font-bold text-gray-800 max-w-[180px]">
+                <p class="truncate">${r.camp}</p>
+            </td>
+            <td class="px-5 py-4 text-gray-500">${r.media}</td>
+            <td class="px-5 py-4 text-right font-bold text-blue-600">${r.click.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-bold text-purple-600">${r.join.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-bold text-indigo-600">${r.login.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-bold text-orange-600">${r.purchase.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-bold text-amber-600">${r.buyAmt.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-bold text-green-600">${r.sell.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-bold text-teal-600">${r.sellAmt.toLocaleString()}</td>
+            <td class="px-5 py-4 text-right font-black text-red-600">${r.revenue.toLocaleString()}</td>
+        </tr>
+    `).join('') + `
+        <tr class="bg-gray-50 border-t-2 border-gray-200 text-xs font-black">
+            <td class="px-5 py-3.5 text-gray-500 sticky left-0 bg-gray-50" colspan="3">합계</td>
+            <td class="px-5 py-3.5 text-right text-blue-700">${total.click.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-purple-700">${total.join.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-indigo-700">${total.login.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-orange-700">${total.purchase.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-amber-700">${total.buyAmt.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-green-700">${total.sell.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-teal-700">${total.sellAmt.toLocaleString()}</td>
+            <td class="px-5 py-3.5 text-right text-red-700">${total.revenue.toLocaleString()}</td>
+        </tr>
+    `;
+
+    // 캠페인 필터 select 동기화
+    const sel = document.getElementById('perf-camp-filter');
+    if (sel && sel.options.length <= 1) {
+        CAMPAIGNS.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.name;
+            sel.appendChild(opt);
+        });
+    }
+}
+
+function renderPoints() {
+    const tbody = document.getElementById('points-table-body');
+    if (!tbody) return;
+
+    const totalPoints     = POINTS.reduce((s, p) => s + p.rawAmount, 0);
+    const pendingPoints   = PAYOUTS.filter(p => p.status !== 'COMPLETED').reduce((s, p) => s + p.rawAmount, 0);
+    const availablePoints = totalPoints - pendingPoints;
+
+    const elTotal = document.getElementById('payout-total');
+    const elAvail = document.getElementById('payout-available');
+    const elPend  = document.getElementById('payout-pending');
+    const elMonth = document.getElementById('payout-monthly');
+    if (elTotal) elTotal.textContent = totalPoints.toLocaleString();
+    if (elAvail) elAvail.textContent = availablePoints.toLocaleString();
+    if (elPend)  elPend.textContent  = pendingPoints.toLocaleString();
+    if (elMonth) elMonth.textContent = totalPoints.toLocaleString();
+
+    const exchDisp = document.getElementById('exchange-available-display');
+    if (exchDisp) exchDisp.textContent = availablePoints.toLocaleString() + ' P';
+
+    tbody.innerHTML = POINTS.map(p => {
+        let statusHtml = '';
+        if (p.status === 'APPLY') {
+            statusHtml = `<button onclick="openExchangeModalForItem(${p.id})"
+                class="px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
+                지급 신청
+            </button>`;
+        } else if (p.status === 'PENDING_APPROVAL') {
+            statusHtml = `<span class="status-badge s-pending">관리자 승인 대기</span>`;
+        } else if (p.status === 'COMPLETED') {
+            statusHtml = `<span class="status-badge s-approved">지급 완료</span>`;
+        }
+
+        return `
+        <tr class="border-b border-gray-50 hover:bg-gray-50/40 transition-colors text-xs">
+            <td class="px-6 py-4 font-bold text-gray-800 max-w-[200px]">
+                <p class="truncate">${p.item}</p>
+                <p class="text-[10px] text-gray-400 font-normal mt-0.5">${p.campaign}</p>
+            </td>
+            <td class="px-6 py-4 text-gray-500 whitespace-nowrap">${p.period}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-gray-500">${p.applyDeadline}까지</span>
+            </td>
+            <td class="px-6 py-4 text-right font-black text-blue-700 whitespace-nowrap">+${p.rawAmount.toLocaleString()} P</td>
+            <td class="px-6 py-4 text-center">${statusHtml}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderPayouts() {
+    const el = document.getElementById('payout-table-body');
+    if (!el) return;
+
+    // 신청 포인트(rawAmount) 내림차순 정렬
+    const sorted = [...PAYOUTS].sort((a, b) => b.rawAmount - a.rawAmount);
+
+    el.innerHTML = sorted.map(p => {
+        let statusHtml = '';
+        if (p.status === 'APPLY')
+            statusHtml = `<span class="status-badge" style="background:#EFF6FF;color:#1D4ED8;">지급 신청</span>`;
+        else if (p.status === 'PENDING_APPROVAL')
+            statusHtml = `<span class="status-badge s-pending">관리자 승인 대기</span>`;
+        else if (p.status === 'COMPLETED')
+            statusHtml = `<span class="status-badge s-approved">지급 완료</span>`;
+        return `
+        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-xs">
+            <td class="px-6 py-4 text-gray-400 font-medium">${p.date}</td>
+            <td class="px-6 py-4 text-right font-black text-gray-900">${p.amount}</td>
+            <td class="px-6 py-4 text-center">${statusHtml}</td>
+        </tr>`;
+    }).join('') || `<tr><td colspan="3" class="px-6 py-10 text-center text-sm text-gray-400">환전 신청 내역이 없습니다.</td></tr>`;
+}
+
+// ═══ 캠페인 지급 신청 모달 (exchange-modal) ═══
+let _exchangeCurrentItem = null;
+
+function openExchangeModalForItem(itemId) {
+    const p = POINTS.find(x => x.id === itemId);
+    if (!p) return;
+    _exchangeCurrentItem = p;
+
+    const nameEl   = document.getElementById('exchange-item-name');
+    const campEl   = document.getElementById('exchange-item-campaign');
+    const amountEl = document.getElementById('exchange-amount-display');
+    if (nameEl)   nameEl.textContent   = p.item;
+    if (campEl)   campEl.textContent   = p.campaign;
+    if (amountEl) amountEl.textContent = p.rawAmount.toLocaleString();
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    openModal('exchange-modal');
+}
+
+function submitExchange() {
+    if (!_exchangeCurrentItem) return;
+    const p = _exchangeCurrentItem;
+    const today   = new Date();
+    const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+
+    p.status = 'PENDING_APPROVAL';
+    PAYOUTS.unshift({
+        id: Date.now(), date: dateStr,
+        item: p.item, campaign: p.campaign,
+        amount: p.rawAmount.toLocaleString() + ' P',
+        rawAmount: p.rawAmount, status: 'APPLY'
+    });
+    closeModal('exchange-modal');
+    showToast('포인트 지급 신청이 완료되었습니다. 관리자 승인 후 지급됩니다.');
+    renderPoints(); renderPayouts();
+}
+
+// ═══ 포인트 환전하기 모달 (convert-modal) ═══
+
+function openConvertModal() {
+    document.getElementById('convert-amount').value = '';
+    document.getElementById('convert-amount-hint').textContent = '최소 10,000 P 이상 입력하세요.';
+    document.getElementById('convert-amount-hint').className = 'text-[10px] text-gray-400 mt-1.5 ml-1';
+    document.getElementById('convert-id-section').classList.add('hidden');
+    document.getElementById('convert-id-filename').classList.add('hidden');
+    document.getElementById('convert-id-file').value = '';
+
+    // 환전 가능 포인트 표시
+    const totalPoints   = POINTS.reduce((s, p) => s + p.rawAmount, 0);
+    const pendingPoints = PAYOUTS.filter(p => p.status !== 'COMPLETED').reduce((s, p) => s + p.rawAmount, 0);
+    const avail = totalPoints - pendingPoints;
+    const el = document.getElementById('convert-available-display');
+    if (el) el.textContent = avail.toLocaleString() + ' P';
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    openModal('convert-modal');
+}
+
+function onConvertAmountInput() {
+    const val      = parseInt(document.getElementById('convert-amount').value) || 0;
+    const hint     = document.getElementById('convert-amount-hint');
+    const idSection = document.getElementById('convert-id-section');
+
+    if (val > 0 && val < 10000) {
+        hint.textContent = '⚠ 최소 10,000 P 이상이어야 합니다.';
+        hint.className = 'text-[10px] text-red-500 mt-1.5 ml-1';
+    } else if (val >= 10000) {
+        hint.textContent = `신청 금액: ${val.toLocaleString()} P`;
+        hint.className = 'text-[10px] text-blue-600 font-bold mt-1.5 ml-1';
+    } else {
+        hint.textContent = '최소 10,000 P 이상 입력하세요.';
+        hint.className = 'text-[10px] text-gray-400 mt-1.5 ml-1';
+    }
+
+    if (val > 50000) {
+        idSection.classList.remove('hidden');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    } else {
+        idSection.classList.add('hidden');
+        document.getElementById('convert-id-file').value = '';
+        document.getElementById('convert-id-filename').classList.add('hidden');
+    }
+}
+
+function onConvertIdFileSelected(e) {
+    const file = e.target.files[0];
+    const el   = document.getElementById('convert-id-filename');
+    if (file) { el.textContent = '✓ ' + file.name; el.classList.remove('hidden'); }
+}
+
+function submitConvert() {
+    const amt = parseInt(document.getElementById('convert-amount').value) || 0;
+
+    if (amt < 10000) {
+        showToast('최소 10,000 P 이상부터 환전 신청이 가능합니다.');
+        return;
+    }
+    if (amt > 50000) {
+        const file = document.getElementById('convert-id-file').files[0];
+        if (!file) {
+            showToast('5만 P 초과 환전 시 신분증 사본 첨부가 필요합니다.');
+            return;
+        }
+    }
+
+    const today   = new Date();
+    const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+    PAYOUTS.unshift({
+        id: Date.now(), date: dateStr,
+        item: '포인트 환전 신청',
+        campaign: '',
+        amount: amt.toLocaleString() + ' P',
+        rawAmount: amt, status: 'APPLY'
+    });
+
+    closeModal('convert-modal');
+    showToast(amt > 50000
+        ? '환전 신청 완료. 신분증 확인 후 매월 15일에 지급됩니다.'
+        : '환전 신청 완료. 매월 15일에 일괄 지급됩니다.'
+    );
+    renderPoints(); renderPayouts();
+}
+
+function refreshExchangeAvailable() {
+    const totalPoints   = POINTS.reduce((s, p) => s + p.rawAmount, 0);
+    const pendingPoints = PAYOUTS.filter(p => p.status !== 'COMPLETED').reduce((s, p) => s + p.rawAmount, 0);
+    const avail = totalPoints - pendingPoints;
+    const el = document.getElementById('exchange-available-display');
+    if (el) el.textContent = avail.toLocaleString() + ' P';
+}
+
+function openModal(id) { const el = document.getElementById(id); el.classList.remove('hidden'); el.style.display='flex'; }
+function closeModal(id) { const el = document.getElementById(id); el.classList.add('hidden'); el.style.display='none'; }
+function openApplyModal(cid) {
+    const c = CAMPAIGNS.find(x=>x.id===cid);
+    if (c) document.getElementById('apply-modal-title').innerText = c.name;
+    openModal('apply-modal');
+}
+function openMediaModal() { openModal('media-modal'); }
+function submitMedia() { showToast('매체 등록 신청이 완료되었습니다. 1~3 영업일 내 검토됩니다.'); closeModal('media-modal'); }
+function processApply() { showToast('캠페인 참여 신청이 완료되었습니다.'); closeModal('apply-modal'); }
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).catch(() => {
+        const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    });
+    showToast('클립보드에 복사되었습니다!');
+}
+
+function showToast(msg) {
+    document.getElementById('toast-msg').innerText = msg;
+    const t = document.getElementById('toast');
+    t.style.opacity = 1; t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => { t.style.opacity = 0; t.style.transform = 'translateX(-50%) translateY(8px)'; }, 2500);
+}
+
+window.onload = () => {
+    switchTab('dashboard');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+</script>
+</body>
+</html>
