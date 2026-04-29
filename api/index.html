@@ -1,1 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이템매니아 × 라살라스 전략적 공동 마케팅 제휴 제안서</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    
+    <!-- Phosphor Icons (for modern icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1E3A8A', // Deep Blue
+                        secondary: '#F97316', // Orange
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background-color: #f1f5f9; }
+        .report-container { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); }
+        .table-stripe tr:nth-child(even) { background-color: #f8fafc; }
+        .table-stripe tr:hover { background-color: #eff6ff; transition: background-color 0.2s; }
+        
+        /* Print styles */
+        @media print {
+            body { background-color: white; }
+            .report-container { box-shadow: none; max-width: 100%; padding: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased py-8 px-4 sm:px-8">
+
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl overflow-hidden report-container">
+        
+        <!-- Header -->
+        <header class="bg-primary text-white p-10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 opacity-10">
+                <i class="ph-fill ph-handshake text-[200px] -mt-10 -mr-10"></i>
+            </div>
+            <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-end">
+                <div>
+                    <span class="inline-block px-3 py-1 bg-blue-700 text-blue-100 text-sm font-semibold rounded-full mb-4">전략적 공동 마케팅 제휴 제안서</span>
+                    <h1 class="text-3xl sm:text-4xl font-bold leading-tight">아이템매니아 × 라살라스</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- Executive Summary / Purpose -->
+        <div class="p-8 pb-0">
+            <div class="bg-blue-50 border-l-4 border-primary p-5 rounded-r-lg shadow-sm flex gap-4 items-start">
+                <i class="ph-fill ph-lightbulb text-primary text-2xl mt-1"></i>
+                <div>
+                    <h3 class="text-lg font-bold text-primary mb-1">제안 목적</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        공동 마케팅으로 유저를 유입시키고, 양사 API 연동 기반으로 성과 흐름을 연결하여 <strong>양사 매출을 함께 확대</strong>하는 구조입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 space-y-12">
+            
+            <!-- Section 1 -->
+            <section>
+                <div class="flex items-center gap-2 border-b-2 border-slate-200 pb-3 mb-5">
+                    <h2 class="text-2xl font-bold text-slate-900">1. 제안 배경 및 목표</h2>
+                </div>
+                <p class="text-slate-600 leading-relaxed text-lg">
+                    양사는 공동 마케팅과 게임사 API 연동 기반 구조를 통해 <strong>쌀먹 유저 및 거래 목적 유저</strong>를 라살라스 신규서버로 유입시키고, 이를 바탕으로 <span class="text-primary font-semibold">라살라스 매출과 아이템매니아 거래수수료 매출을 함께 확대</span>하는 것을 목표로 합니다.
+                </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section>
+                <div class="flex items-center gap-2 border-b-2 border-slate-200 pb-3 mb-5">
+                    <h2 class="text-2xl font-bold text-slate-900">2. 기대효과</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Lasalas -->
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-slate-100 py-3 px-5 border-b border-slate-200">
+                            <h3 class="font-bold text-lg text-slate-800 text-center">라살라스 기대효과</h3>
+                        </div>
+                        <ul class="p-5 space-y-3">
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-green-600 mt-1"></i><span class="text-slate-700">신규서버 초기 유저 유입 및 매출 확대</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-green-600 mt-1"></i><span class="text-slate-700">아이템매니아 유튜버·외부광고·CRM 채널 활용 성과 확대</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-green-600 mt-1"></i><span class="text-slate-700">외부 거래 흐름의 관리 가능 영역화</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-green-600 mt-1"></i><span class="text-slate-700">게임 생태계 활성화 및 고가치 유저 만족도 개선</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-green-600 mt-1"></i><span class="text-slate-700">거래 수수료 추가 수익 발생</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- ItemMania -->
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-orange-50 py-3 px-5 border-b border-orange-100">
+                            <h3 class="font-bold text-lg text-secondary text-center">아이템매니아 기대효과</h3>
+                        </div>
+                        <ul class="p-5 space-y-3">
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-secondary mt-1"></i><span class="text-slate-700">라살라스 거래량 증가에 따른 거래수수료 매출 확대</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-secondary mt-1"></i><span class="text-slate-700">쌀먹 유저 및 거래 목적 유저 유입</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-secondary mt-1"></i><span class="text-slate-700">API 기반 회원들의 간편 거래 지원</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-secondary mt-1"></i><span class="text-slate-700">오입력·미수령 리스크 완화</span></li>
+                            <li class="flex items-start gap-2"><i class="ph-bold ph-check text-secondary mt-1"></i><span class="text-slate-700">게임사 연동형 제휴 사례 확보</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section>
+                <div class="flex items-center gap-2 border-b-2 border-slate-200 pb-3 mb-5">
+                    <h2 class="text-2xl font-bold text-slate-900">3. 전략 제휴 업무 플로우</h2>
+                </div>
+                <p class="text-slate-600 mb-6">
+                    본 제휴의 핵심은 <strong>공동 마케팅을 통한 게임 활성화 → 거래 목적 유저 유입 → 라살라스 신규서버 매출 증가 → 아이템매니아 거래량 증가 → 양사 수익 공유의 선순환 구조</strong>입니다.
+                </p>
+
+                <!-- Flowchart UI -->
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-3 mb-8 w-full bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <div class="flex-1 w-full bg-white border border-slate-200 shadow-sm rounded-lg p-4 text-center">
+                        <i class="ph-fill ph-hard-drives text-primary text-3xl mb-2"></i>
+                        <p class="font-bold text-sm text-slate-800">라살라스<br>신규서버 오픈</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 text-2xl hidden lg:block"></i>
+                    <i class="ph-bold ph-caret-down text-slate-300 text-2xl block lg:hidden"></i>
+                    
+                    <div class="flex-1 w-full bg-white border border-slate-200 shadow-sm rounded-lg p-4 text-center border-t-4 border-t-secondary">
+                        <i class="ph-fill ph-megaphone text-secondary text-3xl mb-2"></i>
+                        <p class="font-bold text-sm text-slate-800">아이템매니아<br>공동 마케팅 집행</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 text-2xl hidden lg:block"></i>
+                    <i class="ph-bold ph-caret-down text-slate-300 text-2xl block lg:hidden"></i>
+
+                    <div class="flex-1 w-full bg-white border border-slate-200 shadow-sm rounded-lg p-4 text-center">
+                        <i class="ph-fill ph-users text-blue-500 text-3xl mb-2"></i>
+                        <p class="font-bold text-sm text-slate-800">쌀먹·거래 목적<br>유저 유입</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 text-2xl hidden lg:block"></i>
+                    <i class="ph-bold ph-caret-down text-slate-300 text-2xl block lg:hidden"></i>
+
+                    <div class="flex-1 w-full bg-white border border-slate-200 shadow-sm rounded-lg p-4 text-center">
+                        <i class="ph-fill ph-trend-up text-green-500 text-3xl mb-2"></i>
+                        <p class="font-bold text-sm text-slate-800">게임 활성화 및<br>신규서버 매출 증가</p>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-slate-300 text-2xl hidden lg:block"></i>
+                    <i class="ph-bold ph-caret-down text-slate-300 text-2xl block lg:hidden"></i>
+
+                    <div class="flex-1 w-full bg-white border border-slate-200 shadow-sm rounded-lg p-4 text-center border-t-4 border-t-primary">
+                        <i class="ph-fill ph-coins text-yellow-500 text-3xl mb-2"></i>
+                        <p class="font-bold text-sm text-slate-800">거래량 증가 및<br>양사 수익 공유</p>
+                    </div>
+                </div>
+
+                <!-- API Image -->
+                <div class="w-full bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex justify-center items-center p-2">
+                    <img src="https://i.postimg.cc/MGXkqHR7/geimsa-api-choejong.png" alt="아이템매니아 X 라살라스 API 공동 마케팅 제휴 모델" class="w-full h-auto rounded-lg">
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section>
+                <div class="flex items-center gap-2 border-b-2 border-slate-200 pb-3 mb-5">
+                    <h2 class="text-2xl font-bold text-slate-900">4. 양사 협업 역할</h2>
+                </div>
+                
+                <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+                    <table class="w-full text-left border-collapse text-sm sm:text-base">
+                        <thead>
+                            <tr class="bg-slate-800 text-white">
+                                <th class="p-3 sm:p-4 text-center w-16">단계</th>
+                                <th class="p-3 sm:p-4 w-32">주체</th>
+                                <th class="p-3 sm:p-4">핵심 활동</th>
+                                <th class="p-3 sm:p-4">의미</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-stripe text-slate-700">
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 text-center font-bold">1</td>
+                                <td class="p-3 sm:p-4 font-semibold text-slate-900">라살라스</td>
+                                <td class="p-3 sm:p-4">신규서버 오픈 및 제휴 대상 매출 범위 설정</td>
+                                <td class="p-3 sm:p-4">공동 마케팅의 기준 매출 영역 정의</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 text-center font-bold">2</td>
+                                <td class="p-3 sm:p-4 font-semibold text-secondary">아이템매니아</td>
+                                <td class="p-3 sm:p-4">유튜버·외부광고·CRM·이벤트 집행</td>
+                                <td class="p-3 sm:p-4">거래 목적 유저와 쌀먹 유저 유입 확대</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 text-center font-bold text-primary">3</td>
+                                <td class="p-3 sm:p-4 font-bold text-primary">양사</td>
+                                <td class="p-3 sm:p-4 font-medium">게임사 API 연동 기반 구조 적용</td>
+                                <td class="p-3 sm:p-4 font-medium text-primary">유입·거래·성과 흐름을 연결</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 text-center font-bold">4</td>
+                                <td class="p-3 sm:p-4 font-semibold text-slate-900">라살라스</td>
+                                <td class="p-3 sm:p-4">신규서버 유저 활동 및 게임 내 매출 발생</td>
+                                <td class="p-3 sm:p-4">게임 활성화 및 매출 증대</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 text-center font-bold">5</td>
+                                <td class="p-3 sm:p-4 font-semibold text-secondary">아이템매니아</td>
+                                <td class="p-3 sm:p-4">라살라스 거래 활성화 및 거래수수료 발생</td>
+                                <td class="p-3 sm:p-4">플랫폼 매출 확대</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 sm:p-4 text-center font-bold text-primary">6</td>
+                                <td class="p-3 sm:p-4 font-bold text-primary">양사</td>
+                                <td class="p-3 sm:p-4 font-medium">약정 비율에 따른 성과 공유</td>
+                                <td class="p-3 sm:p-4 font-medium text-primary">지속 가능한 제휴 구조 확보</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section>
+                <div class="flex items-center gap-2 border-b-2 border-slate-200 pb-3 mb-5">
+                    <h2 class="text-2xl font-bold text-slate-900">5. 마케팅 지원 규모</h2>
+                </div>
+                
+                <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm mb-4">
+                    <table class="w-full text-left border-collapse text-sm sm:text-base">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-800 border-b border-slate-300">
+                                <th class="p-3 sm:p-4 w-1/4">구분</th>
+                                <th class="p-3 sm:p-4">제공 내용</th>
+                                <th class="p-3 sm:p-4 text-right w-1/4">예상 비용(월)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-stripe text-slate-700">
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">유튜버 광고</td>
+                                <td class="p-3 sm:p-4">계약 유튜버 10~15명</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">50,000,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">이벤트</td>
+                                <td class="p-3 sm:p-4">프로모션 이벤트 진행 (판촉비 포함)</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">(E) 100,000,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">PC방 광고</td>
+                                <td class="p-3 sm:p-4">NMP PC방, 피카 PC방, 플레이도넛런처</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">10,000,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">애드웨어</td>
+                                <td class="p-3 sm:p-4">고클린, 플레어레인</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">4,500,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">DA 광고</td>
+                                <td class="p-3 sm:p-4">모비온, 트레디아</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">3,000,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">내부 채널</td>
+                                <td class="p-3 sm:p-4">DM(200만명), 푸시(100만명), LMS(5만명)</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">22,500,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">내부 배너</td>
+                                <td class="p-3 sm:p-4">WEB, MOB 사이트 메인 및 주요 구좌</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">10,000,000 원</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 sm:p-4 font-semibold">바이럴</td>
+                                <td class="p-3 sm:p-4">블로그 포스팅, 커뮤니티 침투 바이럴</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">5,000,000 원</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-primary text-white font-bold text-lg">
+                                <td colspan="2" class="p-3 sm:p-4 text-center tracking-wider">합계</td>
+                                <td class="p-3 sm:p-4 text-right font-mono">205,000,000 원</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section>
+                <div class="flex items-center gap-2 border-b-2 border-slate-200 pb-3 mb-5">
+                    <h2 class="text-2xl font-bold text-slate-900">6. 양사 수익 공유 구조</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Share 1 -->
+                    <div class="relative bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-slate-900 rounded-t-xl"></div>
+                        <div>
+                            <div class="flex items-center gap-2 text-slate-500 font-bold mb-4">
+                                <span class="bg-slate-100 px-3 py-1 rounded text-slate-800">라살라스</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                                <span class="bg-orange-100 text-secondary px-3 py-1 rounded">아이템매니아</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">신규서버 관련 매출의 20% 제공</h3>
+                            <p class="text-slate-600">아이템매니아의 마케팅 유입 기여에 대한 성과 보상</p>
+                        </div>
+                    </div>
+
+                    <!-- Share 2 -->
+                    <div class="relative bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-secondary rounded-t-xl"></div>
+                        <div>
+                            <div class="flex items-center gap-2 text-slate-500 font-bold mb-4">
+                                <span class="bg-orange-100 text-secondary px-3 py-1 rounded">아이템매니아</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                                <span class="bg-slate-100 px-3 py-1 rounded text-slate-800">라살라스</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">라살라스 거래수수료의 20% 제공</h3>
+                            <p class="text-slate-600">라살라스 IP 및 게임 활성화 기여에 대한 성과 공유</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7 (Final Message) -->
+            <section class="mt-12 pb-12">
+                <div class="bg-gradient-to-br from-slate-900 to-primary rounded-2xl p-8 sm:p-10 text-center relative overflow-hidden shadow-lg">
+                    <!-- Decorative quotes -->
+                    <i class="ph-fill ph-quotes text-white opacity-10 text-6xl absolute top-4 left-6"></i>
+                    
+                    <h2 class="text-white text-xl sm:text-2xl font-bold mb-6 relative z-10 leading-snug">
+                        "라살라스 측에 신규서버 활성화를 위한 유튜버·PC방·외부광고 및 당사 채널을 결합한<br class="hidden sm:block"> 대규모 <span class="text-secondary">공동 마케팅을 제안</span>하였으며, 상호 시너지 창출을 위한 <span class="text-secondary">긴밀한 협업을 약속</span>하였습니다."
+                    </h2>
+                    <div class="w-16 h-1 bg-slate-500 mx-auto my-6 opacity-50"></div>
+                    <p class="text-blue-100 text-lg sm:text-xl font-medium relative z-10 leading-relaxed">
+                        "이를 통해 단순 API 연동을 넘어,<br class="hidden sm:block"> 
+                        <span class="text-white font-bold border-b-2 border-secondary pb-1">라살라스의 신규서버 매출 증대</span>와 <span class="text-white font-bold border-b-2 border-secondary pb-1">당사의 거래수수료 매출 확대</span>를<br class="hidden sm:block"> 동시에 달성하는 성공적인 공동 마케팅 제휴 모델로 이끌어 내겠습니다."
+                    </p>
+                </div>
+            </section>
+
+        </div>
+        
+        <!-- Footer for print -->
+        <footer class="bg-slate-100 text-center p-4 text-slate-400 text-sm border-t border-slate-200">
+            &copy; 2026 ItemMania. All rights reserved. | Confidential Report
+        </footer>
+    </div>
+
+    <!-- Print Button (Visible only on screen) -->
+    <div class="max-w-5xl mx-auto mt-6 text-right no-print">
+        <button onclick="window.print()" class="bg-primary hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors flex items-center gap-2 inline-flex">
+            <i class="ph-bold ph-printer"></i>
+            PDF 저장 및 인쇄
+        </button>
+    </div>
+
+</body>
+</html>
