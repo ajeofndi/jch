@@ -223,10 +223,95 @@
       font-size: 13px;
       text-align: right;
     }
+    /* A4 print optimization */
+    @page {
+      size: A4;
+      margin: 14mm 12mm;
+    }
+    .print-page-start {
+      break-before: page;
+      page-break-before: always;
+    }
+    .avoid-break {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
     @media print {
-      body { background: #fff; }
-      .page { margin: 0; max-width: none; padding: 0; }
-      .section, .cover { box-shadow: none; page-break-inside: avoid; }
+      :root {
+        --bg: #ffffff;
+        --paper: #ffffff;
+        --ink: #111827;
+        --muted: #4b5563;
+        --line: #cfd6e0;
+      }
+      html, body {
+        width: 210mm;
+        background: #fff;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body {
+        font-size: 10.5pt;
+        line-height: 1.48;
+      }
+      .page {
+        margin: 0;
+        max-width: none;
+        padding: 0;
+      }
+      .cover {
+        min-height: 255mm;
+        border-radius: 0;
+        padding: 34mm 18mm 20mm;
+        box-shadow: none;
+        break-after: page;
+        page-break-after: always;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .section {
+        margin-top: 0;
+        margin-bottom: 8mm;
+        padding: 8mm 8mm;
+        border-radius: 8px;
+        box-shadow: none;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .section h2 {
+        font-size: 16pt;
+        margin-bottom: 4mm;
+      }
+      h1 { font-size: 28pt; }
+      .subtitle { font-size: 12.5pt; }
+      .lead { font-size: 11.5pt; }
+      .callout, .quote {
+        padding: 4mm 5mm;
+        border-radius: 8px;
+      }
+      table {
+        font-size: 9.2pt;
+        page-break-inside: auto;
+      }
+      tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      th, td {
+        padding: 3mm 3.2mm;
+      }
+      .steps {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3mm;
+      }
+      .step, .card {
+        padding: 4mm;
+        border-radius: 8px;
+      }
+      .footer-note {
+        display: none;
+      }
     }
     @media (max-width: 760px) {
       .cover { padding: 30px 24px; }
@@ -267,7 +352,7 @@
       <p>안심 거래관은 초기 추진 과제가 아니라, Traderie 유입이 아이템매니아의 가입·거래신청·거래완료로 이어지는지 검증된 이후 검토할 확장안으로 보는 것이 적절함.</p>
     </section>
 
-    <section class="section">
+    <section class="section print-page-start">
       <h2><span class="num">3</span>아이템매니아 역할 기준</h2>
       <table>
         <thead>
@@ -330,7 +415,7 @@
       </table>
     </section>
 
-    <section class="section">
+    <section class="section print-page-start">
       <h2><span class="num">5</span>실효성 판단 기준</h2>
       <p class="lead">본 제휴의 실효성은 거래관 구축 여부가 아니라, 실제 거래 전환 여부로 판단해야 함.</p>
       <table>
@@ -421,7 +506,7 @@
       </table>
     </section>
 
-    <section class="section">
+    <section class="section print-page-start">
       <h2><span class="num">8</span>미팅 체크리스트</h2>
       <p class="lead">미팅의 핵심은 “안심 거래관 구축 협의”가 아니라, Traderie의 자산이 실제 거래 전환으로 이어질 수 있는지 확인하는 것임.</p>
       <table>
@@ -482,7 +567,7 @@
       </table>
     </section>
 
-    <section class="section">
+    <section class="section print-page-start">
       <h2><span class="num">9</span>미팅 시 아이템매니아 입장</h2>
       <div class="quote">
         아이템매니아는 이미 로블록스와 디아블로 카테고리를 보유하고 있으므로, 초기부터 별도 안심 거래관 구축을 전제로 제휴를 추진하기는 어렵습니다. 우선 Traderie의 한국 유저 트래픽과 시세 데이터가 아이템매니아의 실제 거래 전환으로 이어질 수 있는지 기존 카테고리 유입 테스트를 통해 검증하는 것이 적절합니다.
